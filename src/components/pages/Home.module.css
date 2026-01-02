@@ -22,13 +22,15 @@
   overflow-x: hidden;
 }
 
-.heroContent {
-  animation: fadeInUp 0.8s ease-out;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
+  .heroContent {
+    animation: fadeInUp 0.8s ease-out;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+  }
 
 .heroTitle {
   font-size: 3.75rem;
@@ -37,6 +39,9 @@
   margin-bottom: 1.75rem;
   color: #1a202c;
   letter-spacing: -1.5px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .highlight {
@@ -54,6 +59,8 @@
   line-height: 1.7;
   max-width: 550px;
   font-weight: 400;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .heroButtons {
@@ -223,6 +230,9 @@
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 1rem;
 }
 
 .sectionTitle {
@@ -484,6 +494,8 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 0 1rem;
   }
 
@@ -544,6 +556,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 3rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0;
 }
 
 .benefitCard {
@@ -616,6 +632,21 @@
     text-align: center;
     gap: 2rem;
     min-height: auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .heroContent {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .heroImage {
+    width: 100%;
+    max-width: 100%;
   }
 
   .heroTitle {
@@ -703,17 +734,26 @@
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1.5rem;
     padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productCard {
     padding: 1.25rem;
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productImage {
     height: 180px;
     margin: 1.25rem 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -732,12 +772,20 @@
     font-size: 2rem;
     line-height: 1.3;
     margin-bottom: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0;
   }
 
   .heroSubtitle {
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 1.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0;
   }
 
   .heroButtons {
@@ -747,6 +795,9 @@
     gap: 0.875rem;
     margin-bottom: 2rem;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0;
   }
 
   .primaryButton,
@@ -761,16 +812,23 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto;
+    box-sizing: border-box;
   }
 
   .heroStats {
     justify-content: center;
     gap: 2rem;
     flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0;
   }
 
   .stat {
     min-width: 100px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .statNumber {
@@ -784,12 +842,33 @@
 
   .heroImage {
     height: 350px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .floatingCard {
     min-width: 100px;
+    max-width: 140px;
     padding: 0.875rem;
     font-size: 0.8rem;
+    position: relative;
+  }
+
+  .floatingCard:nth-child(1) {
+    top: 5%;
+    left: 5%;
+  }
+
+  .floatingCard:nth-child(2) {
+    top: 50%;
+    right: 5%;
+    left: auto;
+  }
+
+  .floatingCard:nth-child(3) {
+    bottom: 5%;
+    left: 10%;
   }
 
   .cardIcon {
@@ -846,18 +925,26 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.25rem;
     padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productCard {
     padding: 1.25rem;
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productImage {
     height: 180px;
     margin: 1.25rem 0;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .productName {
@@ -927,11 +1014,19 @@
     font-size: 1.75rem;
     line-height: 1.3;
     margin-bottom: 0.875rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0;
   }
 
   .heroSubtitle {
     font-size: 0.95rem;
     margin-bottom: 1.25rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0;
   }
 
   .heroButtons {
@@ -967,12 +1062,33 @@
 
   .heroImage {
     height: 300px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .floatingCard {
     min-width: 90px;
+    max-width: 120px;
     padding: 0.75rem;
     font-size: 0.75rem;
+    position: relative;
+  }
+
+  .floatingCard:nth-child(1) {
+    top: 5%;
+    left: 5%;
+  }
+
+  .floatingCard:nth-child(2) {
+    top: 50%;
+    right: 5%;
+    left: auto;
+  }
+
+  .floatingCard:nth-child(3) {
+    bottom: 5%;
+    left: 10%;
   }
 
   .cardIcon {
@@ -995,25 +1111,39 @@
 
   .sectionHeader {
     margin-bottom: 1.75rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
   }
 
   .sectionTitle {
     font-size: 1.5rem;
     margin-bottom: 0.625rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .sectionSubtitle {
     font-size: 0.9rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .categoriesGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
   }
 
   .categoryCard {
     padding: 1.5rem 0.875rem;
     min-height: 140px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .categoryIcon {
@@ -1035,13 +1165,17 @@
     gap: 1rem;
     padding: 0;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productCard {
     padding: 1.125rem;
     width: 100%;
     max-width: 100%;
-    margin: 0 auto;
+    margin: 0;
+    box-sizing: border-box;
   }
 
   .productBadge {
@@ -1147,10 +1281,18 @@
 
   .heroTitle {
     font-size: 1.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0;
   }
 
   .heroSubtitle {
     font-size: 0.9rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0;
   }
 
   .primaryButton,
@@ -1169,11 +1311,32 @@
 
   .heroImage {
     height: 250px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .floatingCard {
     min-width: 80px;
+    max-width: 100px;
     padding: 0.625rem;
+    position: relative;
+  }
+
+  .floatingCard:nth-child(1) {
+    top: 5%;
+    left: 5%;
+  }
+
+  .floatingCard:nth-child(2) {
+    top: 50%;
+    right: 5%;
+    left: auto;
+  }
+
+  .floatingCard:nth-child(3) {
+    bottom: 5%;
+    left: 10%;
   }
 
   .categoriesSection,
@@ -1188,15 +1351,30 @@
 
   .sectionTitle {
     font-size: 1.35rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .sectionHeader {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
   }
 
   .categoriesGrid {
     gap: 0.875rem;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
   }
 
   .categoryCard {
     padding: 1.25rem 0.75rem;
     min-height: 130px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .categoryIcon {
@@ -1211,18 +1389,25 @@
     gap: 0.875rem;
     padding: 0;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productCard {
     padding: 1rem;
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .productImage {
     height: 140px;
     margin: 0.875rem 0;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .productName {
