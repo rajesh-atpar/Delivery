@@ -100,34 +100,34 @@ const Home = () => {
               Browse Categories
             </Link>
           </div>
-          <div className={styles.heroStats}>
-            <div className={styles.stat}>
-              <span className={styles.statNumber}>10K+</span>
-              <span className={styles.statLabel}>Products</span>
+          <div className={styles.offersSection}>
+            <div className={styles.offerCard}>
+              <div className={styles.offerBadge}>FLAT</div>
+              <div className={styles.offerContent}>
+                <div className={styles.offerDiscount}>20% OFF</div>
+                <div className={styles.offerText}>On First Order</div>
+                <div className={styles.offerCode}>Use Code: FIRST20</div>
+              </div>
             </div>
-            <div className={styles.stat}>
-              <span className={styles.statNumber}>50K+</span>
-              <span className={styles.statLabel}>Happy Customers</span>
+            <div className={styles.offerCard}>
+              <div className={styles.offerBadge}>UPTO</div>
+              <div className={styles.offerContent}>
+                <div className={styles.offerDiscount}>50% OFF</div>
+                <div className={styles.offerText}>On Fresh Fruits</div>
+                <div className={styles.offerCode}>Use Code: FRUIT50</div>
+              </div>
             </div>
-            <div className={styles.stat}>
-              <span className={styles.statNumber}>100+</span>
-              <span className={styles.statLabel}>Brands</span>
+            <div className={styles.offerCard}>
+              <div className={styles.offerBadge}>FLAT</div>
+              <div className={styles.offerContent}>
+                <div className={styles.offerDiscount}>₹100 OFF</div>
+                <div className={styles.offerText}>On Orders Above ₹500</div>
+                <div className={styles.offerCode}>Use Code: SAVE100</div>
+              </div>
             </div>
           </div>
         </div>
         <div className={styles.heroImage}>
-          <div className={styles.floatingCard}>
-            <span className={styles.cardIcon}>🛒</span>
-            <p>Free Shipping</p>
-          </div>
-          <div className={styles.floatingCard}>
-            <span className={styles.cardIcon}>⭐</span>
-            <p>Top Rated</p>
-          </div>
-          <div className={styles.floatingCard}>
-            <span className={styles.cardIcon}>🔒</span>
-            <p>Secure Payment</p>
-          </div>
         </div>
       </section>
 

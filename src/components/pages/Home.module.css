@@ -12,10 +12,10 @@
   margin: 0 auto;
   padding: 6rem 2rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5rem;
+  grid-template-columns: 1fr;
+  gap: 0;
   align-items: center;
-  min-height: 650px;
+  min-height: auto;
   position: relative;
   width: 100%;
   box-sizing: border-box;
@@ -126,90 +126,196 @@
   border-color: #3b82f6;
 }
 
-.heroStats {
+.offersSection {
   display: flex;
-  gap: 4rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
   padding-top: 2rem;
-  border-top: 1px solid rgba(59, 130, 246, 0.1);
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-}
-
-.statNumber {
-  font-size: 2.75rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.2;
-}
-
-.statLabel {
-  font-size: 0.95rem;
-  color: #64748b;
-  font-weight: 500;
-  margin-top: 0.5rem;
-  letter-spacing: 0.3px;
-}
-
-.heroImage {
-  position: relative;
-  height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
+  justify-content: center;
+  align-items: stretch;
 }
 
-.floatingCard {
-  position: absolute;
-  background: white;
-  padding: 1.5rem;
+/* Desktop/Larger Screen Style - Grid Layout with Fade In */
+@media (min-width: 769px) {
+  .offersSection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding-top: 2.5rem;
+  }
+
+  .offerCard {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 2rem;
+    border-radius: 24px;
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  .offerCard:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .offerCard:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .offerCard:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+
+  .offerDiscount {
+    font-size: 3rem;
+  }
+
+  .offerText {
+    font-size: 1.1rem;
+  }
+
+  .offerCode {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+.offerCard {
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.35), 0 4px 12px rgba(255, 107, 107, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.25);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.offerCard:nth-child(2) {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  box-shadow: 0 10px 30px rgba(78, 205, 196, 0.35), 0 4px 12px rgba(78, 205, 196, 0.2);
+}
+
+.offerCard:nth-child(3) {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 10px 30px rgba(240, 147, 251, 0.35), 0 4px 12px rgba(240, 147, 251, 0.2);
+}
+
+.offerCard::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.offerCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25), 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.offerBadge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.offerContent {
+  position: relative;
+  z-index: 1;
+}
+
+.offerDiscount {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -1px;
+}
+
+.offerText {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.offerCode {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  animation: float 3s ease-in-out infinite;
-  min-width: 140px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 0.625rem 1.125rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  margin-top: 0.75rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
 }
 
-.floatingCard:nth-child(1) {
-  top: 10%;
-  left: 10%;
-  animation-delay: 0s;
+.offerCard:hover .offerCode {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
 }
 
-.floatingCard:nth-child(2) {
-  top: 50%;
-  right: 10%;
-  animation-delay: 1s;
+/* Animation Keyframes */
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.floatingCard:nth-child(3) {
-  bottom: 10%;
-  left: 20%;
-  animation-delay: 2s;
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.cardIcon {
-  font-size: 2.5rem;
-}
-
-.floatingCard p {
-  margin: 0;
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 0.9rem;
+.heroImage {
+  display: none;
 }
 
 /* Categories Section */
@@ -615,15 +721,6 @@
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
 /* Responsive Design */
 @media (max-width: 968px) {
   .hero {
@@ -645,8 +742,7 @@
   }
 
   .heroImage {
-    width: 100%;
-    max-width: 100%;
+    display: none;
   }
 
   .heroTitle {
@@ -678,23 +774,35 @@
     justify-content: center;
   }
 
-  .heroStats {
-    justify-content: center;
-    gap: 2.5rem;
+  .offersSection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding-top: 2rem;
+  }
+
+  .offerCard {
+    min-width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  .offerCard:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .offerCard:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .offerCard:nth-child(3) {
+    animation-delay: 0.5s;
   }
 
   .heroImage {
-    height: 400px;
-  }
-
-  .floatingCard {
-    min-width: 120px;
-    padding: 1rem;
-    font-size: 0.85rem;
-  }
-
-  .cardIcon {
-    font-size: 2rem;
+    display: none;
   }
 
   .sectionHeader {
@@ -759,9 +867,9 @@
 
 @media (max-width: 768px) {
   .hero {
-    padding: 2.5rem 1rem;
+    padding: 2rem 1rem;
     min-height: auto;
-    gap: 1.5rem;
+    gap: 0;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -769,35 +877,15 @@
   }
 
   .heroTitle {
-    font-size: 2rem;
-    line-height: 1.3;
-    margin-bottom: 1rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    padding: 0;
+    display: none;
   }
 
   .heroSubtitle {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    padding: 0;
+    display: none;
   }
 
   .heroButtons {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.875rem;
-    margin-bottom: 2rem;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 0;
+    display: none;
   }
 
   .primaryButton,
@@ -815,64 +903,65 @@
     box-sizing: border-box;
   }
 
-  .heroStats {
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
+  .offersSection {
+    justify-content: flex-start;
+    gap: 1.25rem;
+    flex-wrap: nowrap;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 0;
+    padding-top: 0;
+    margin-top: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
-  .stat {
-    min-width: 100px;
-    max-width: 100%;
-    box-sizing: border-box;
+  .offersSection::-webkit-scrollbar {
+    display: none;
   }
 
-  .statNumber {
+  .offerCard {
+    min-width: 280px;
+    max-width: 280px;
+    flex: 0 0 auto;
+    padding: 1.5rem;
+    animation: slideInFromRight 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateX(100px);
+    scroll-snap-align: start;
+  }
+
+  .offerCard:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .offerCard:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .offerCard:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+
+  .offerDiscount {
     font-size: 2rem;
-    line-height: 1.2;
   }
 
-  .statLabel {
-    font-size: 0.85rem;
+  .offerText {
+    font-size: 0.9rem;
+  }
+
+  .offerCode {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.875rem;
   }
 
   .heroImage {
-    height: 350px;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-  }
-
-  .floatingCard {
-    min-width: 100px;
-    max-width: 140px;
-    padding: 0.875rem;
-    font-size: 0.8rem;
-    position: relative;
-  }
-
-  .floatingCard:nth-child(1) {
-    top: 5%;
-    left: 5%;
-  }
-
-  .floatingCard:nth-child(2) {
-    top: 50%;
-    right: 5%;
-    left: auto;
-  }
-
-  .floatingCard:nth-child(3) {
-    bottom: 5%;
-    left: 10%;
-  }
-
-  .cardIcon {
-    font-size: 1.75rem;
+    display: none;
   }
 
   .categoriesSection,
@@ -1002,8 +1091,8 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding: 2rem 1rem;
-    gap: 1.25rem;
+    padding: 1.5rem 1rem;
+    gap: 0;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -1011,27 +1100,15 @@
   }
 
   .heroTitle {
-    font-size: 1.75rem;
-    line-height: 1.3;
-    margin-bottom: 0.875rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    padding: 0;
+    display: none;
   }
 
   .heroSubtitle {
-    font-size: 0.95rem;
-    margin-bottom: 1.25rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    padding: 0;
+    display: none;
   }
 
   .heroButtons {
-    gap: 0.75rem;
-    margin-bottom: 1.75rem;
+    display: none;
   }
 
   .primaryButton,
@@ -1044,59 +1121,68 @@
     justify-content: center;
   }
 
-  .heroStats {
-    gap: 1.5rem;
+  .offersSection {
+    gap: 1rem;
+    padding-top: 0;
+    margin-top: 0;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
   }
 
-  .stat {
-    min-width: 80px;
+  .offersSection::-webkit-scrollbar {
+    display: none;
   }
 
-  .statNumber {
+  .offerCard {
+    min-width: 260px;
+    max-width: 260px;
+    flex: 0 0 auto;
+    padding: 1.25rem;
+    animation: slideInFromRight 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateX(100px);
+    scroll-snap-align: start;
+  }
+
+  .offerCard:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .offerCard:nth-child(2) {
+    animation-delay: 0.25s;
+  }
+
+  .offerCard:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  .offerDiscount {
     font-size: 1.75rem;
   }
 
-  .statLabel {
-    font-size: 0.8rem;
+  .offerText {
+    font-size: 0.875rem;
+  }
+
+  .offerCode {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .offerBadge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.625rem;
   }
 
   .heroImage {
-    height: 300px;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-  }
-
-  .floatingCard {
-    min-width: 90px;
-    max-width: 120px;
-    padding: 0.75rem;
-    font-size: 0.75rem;
-    position: relative;
-  }
-
-  .floatingCard:nth-child(1) {
-    top: 5%;
-    left: 5%;
-  }
-
-  .floatingCard:nth-child(2) {
-    top: 50%;
-    right: 5%;
-    left: auto;
-  }
-
-  .floatingCard:nth-child(3) {
-    bottom: 5%;
-    left: 10%;
-  }
-
-  .cardIcon {
-    font-size: 1.5rem;
-  }
-
-  .floatingCard p {
-    font-size: 0.8rem;
+    display: none;
   }
 
   .categoriesSection,
@@ -1272,71 +1358,91 @@
 
 @media (max-width: 360px) {
   .hero {
-    padding: 1.75rem 0.875rem;
+    padding: 1.5rem 0.875rem;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+    gap: 0;
   }
 
   .heroTitle {
-    font-size: 1.5rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    padding: 0;
+    display: none;
   }
 
   .heroSubtitle {
-    font-size: 0.9rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    padding: 0;
+    display: none;
   }
 
-  .primaryButton,
-  .secondaryButton {
-    padding: 0.875rem 1.5rem;
-    font-size: 0.95rem;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .heroButtons {
+    display: none;
   }
 
-  .statNumber {
+  .offersSection {
+    gap: 0.875rem;
+    padding-top: 0;
+    margin-top: 0;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+  }
+
+  .offersSection::-webkit-scrollbar {
+    display: none;
+  }
+
+  .offerCard {
+    min-width: 240px;
+    max-width: 240px;
+    flex: 0 0 auto;
+    padding: 1rem;
+    animation: slideInFromRight 0.5s ease-out forwards;
+    opacity: 0;
+    transform: translateX(80px);
+    scroll-snap-align: start;
+  }
+
+  .offerCard:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .offerCard:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .offerCard:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .offerDiscount {
     font-size: 1.5rem;
   }
 
+  .offerText {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .offerCode {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.625rem;
+  }
+
+  .offerBadge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
   .heroImage {
-    height: 250px;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-  }
-
-  .floatingCard {
-    min-width: 80px;
-    max-width: 100px;
-    padding: 0.625rem;
-    position: relative;
-  }
-
-  .floatingCard:nth-child(1) {
-    top: 5%;
-    left: 5%;
-  }
-
-  .floatingCard:nth-child(2) {
-    top: 50%;
-    right: 5%;
-    left: auto;
-  }
-
-  .floatingCard:nth-child(3) {
-    bottom: 5%;
-    left: 10%;
+    display: none;
   }
 
   .categoriesSection,
