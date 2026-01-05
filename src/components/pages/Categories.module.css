@@ -3,11 +3,18 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 1.5rem 1rem;
+  padding-bottom: 1.5rem;
   background: #ffffff;
   position: relative;
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .categoriesSection {
+    padding-bottom: 5rem;
+  }
 }
 
 .sectionHeader {

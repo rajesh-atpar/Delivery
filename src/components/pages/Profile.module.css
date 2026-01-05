@@ -1,0 +1,60 @@
+.profilePage {
+  min-height: calc(100vh - 200px);
+  padding: 2rem 1rem;
+  padding-bottom: 5rem;
+  background: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.placeholder {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .profilePage {
+    padding: 1.5rem 1rem;
+    padding-bottom: 5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profilePage {
+    padding: 1.25rem 0.75rem;
+    padding-bottom: 5rem;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+}
+

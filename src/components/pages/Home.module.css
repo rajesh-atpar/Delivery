@@ -4,6 +4,13 @@
   width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
+  padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .home {
+    padding-bottom: 5rem;
+  }
 }
 
 /* Hero Section */
