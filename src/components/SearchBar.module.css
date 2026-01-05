@@ -4,6 +4,13 @@
   box-sizing: border-box;
 }
 
+/* Hide search bar on laptop view */
+@media (min-width: 769px) {
+  .searchContainer {
+    display: none;
+  }
+}
+
 .searchWrapper {
   width: 100%;
   max-width: 100%;

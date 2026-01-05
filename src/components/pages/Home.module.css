@@ -193,12 +193,14 @@
   flex: 1;
   min-width: 200px;
   max-width: 320px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 20px;
   padding: 1.75rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.35), 0 4px 12px rgba(255, 107, 107, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0.25);
@@ -209,14 +211,22 @@
   transform: translateX(0);
 }
 
+.offerOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 100%);
+  z-index: 0;
+}
+
 .offerCard:nth-child(2) {
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  box-shadow: 0 10px 30px rgba(78, 205, 196, 0.35), 0 4px 12px rgba(78, 205, 196, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .offerCard:nth-child(3) {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  box-shadow: 0 10px 30px rgba(240, 147, 251, 0.35), 0 4px 12px rgba(240, 147, 251, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .offerCard::before {
@@ -249,11 +259,12 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 2;
 }
 
 .offerContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .offerDiscount {

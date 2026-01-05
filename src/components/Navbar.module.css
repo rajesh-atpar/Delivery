@@ -13,6 +13,16 @@
   box-sizing: border-box;
 }
 
+/* Fixed navbar for laptop view */
+@media (min-width: 769px) {
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -63,6 +73,390 @@
   font-size: 0.9rem;
   font-weight: 500;
   flex-shrink: 0;
+}
+
+/* Desktop Navigation Links */
+.desktopNavLinks {
+  display: none;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.desktopNavLink {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  position: relative;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border-radius: 8px;
+}
+
+.desktopNavLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: #ffffff;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.desktopNavLink:hover::after {
+  width: 80%;
+}
+
+.desktopNavLink:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Desktop Search Bar */
+.desktopSearchContainer {
+  display: none;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 2rem;
+}
+
+.desktopSearchWrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.desktopSearchWrapper:focus-within {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.desktopSearchIcon {
+  color: white;
+  font-size: 16px;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.desktopSearchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+  padding: 0.25rem 0;
+}
+
+.desktopSearchInput::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Desktop Profile Icon */
+.profileIcon {
+  display: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.profileIcon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.profileIconSvg {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+/* Floating Profile Panel */
+.profilePanelOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Only show profile panel on laptop view */
+@media (max-width: 768px) {
+  .profilePanelOverlay {
+    display: none !important;
+    pointer-events: none !important;
+  }
+}
+
+.profilePanelOverlay.profilePanelOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.profilePanelBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.profilePanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 450px;
+  max-width: 90vw;
+  height: 100vh;
+  background: white;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 10001;
+}
+
+.profilePanelOverlay.profilePanelOpen .profilePanel {
+  transform: translateX(0);
+}
+
+.profilePanelHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.profilePanelTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.profilePanelClose {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.profilePanelClose:hover {
+  background: rgba(236, 234, 234, 0.3);
+  transform: rotate(90deg);
+}
+
+.profilePanelContent {
+  padding: 2rem;
+  flex: 1;
+}
+
+.profilePanelHeaderSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+.profilePanelAvatarContainer {
+  position: relative;
+}
+
+.profilePanelAvatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.profilePanelAvatarIcon {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.profilePanelEditButton {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.profilePanelEditButton:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.profilePanelEditIcon {
+  font-size: 12px;
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.profilePanelEditButton:hover .profilePanelEditIcon {
+  color: white;
+}
+
+.profilePanelInfo {
+  text-align: center;
+}
+
+.profilePanelName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.profilePanelEmail {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.profilePanelDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profilePanelDetailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profilePanelSectionTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.profilePanelDetailCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.profilePanelDetailItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profilePanelDetailItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.profilePanelDetailIcon {
+  font-size: 1.125rem;
+  color: #3b82f6;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.profilePanelDetailContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.profilePanelDetailLabel {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profilePanelDetailValue {
+  font-size: 1rem;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.profilePanelStatusActive {
+  color: #10b981;
+  font-weight: 700;
 }
 
 .locationIcon {
@@ -399,6 +793,52 @@
 .fullScreenMenu .navLink:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.05);
+}
+
+/* Laptop/Desktop View */
+@media (min-width: 769px) {
+  .container {
+    padding: 1rem 2rem;
+    gap: 1.5rem;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .logo {
+    flex-shrink: 0;
+  }
+
+  .desktopSearchContainer {
+    display: block;
+    order: 2;
+  }
+
+  .desktopNavLinks {
+    display: flex;
+    order: 3;
+  }
+
+  .profileIcon {
+    display: flex;
+    order: 4;
+    margin-left: auto;
+  }
+
+  .profilePanelOverlay {
+    display: block;
+  }
+
+  .locationContainer {
+    display: none;
+  }
+
+  .menuToggle {
+    display: none;
+  }
+
+  .fullScreenMenu {
+    display: none;
+  }
 }
 
 /* Responsive Design - Mobile First */

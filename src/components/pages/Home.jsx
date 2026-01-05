@@ -93,7 +93,8 @@ const Home = () => {
             </Link>
           </div>
           <div className={styles.offersSection}>
-            <div className={styles.offerCard}>
+            <div className={styles.offerCard} style={{backgroundImage: 'url(https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0)'}}>
+              <div className={styles.offerOverlay}></div>
               <div className={styles.offerBadge}>FLAT</div>
               <div className={styles.offerContent}>
                 <div className={styles.offerDiscount}>20% OFF</div>
@@ -101,7 +102,8 @@ const Home = () => {
                 <div className={styles.offerCode}>Use Code: FIRST20</div>
               </div>
             </div>
-            <div className={styles.offerCard}>
+            <div className={styles.offerCard} style={{backgroundImage: 'url(https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0)'}}>
+              <div className={styles.offerOverlay}></div>
               <div className={styles.offerBadge}>UPTO</div>
               <div className={styles.offerContent}>
                 <div className={styles.offerDiscount}>50% OFF</div>
@@ -109,7 +111,8 @@ const Home = () => {
                 <div className={styles.offerCode}>Use Code: FRUIT50</div>
               </div>
             </div>
-            <div className={styles.offerCard}>
+            <div className={styles.offerCard} style={{backgroundImage: 'url(https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0)'}}>
+              <div className={styles.offerOverlay}></div>
               <div className={styles.offerBadge}>FLAT</div>
               <div className={styles.offerContent}>
                 <div className={styles.offerDiscount}>₹100 OFF</div>
