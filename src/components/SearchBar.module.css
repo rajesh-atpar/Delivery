@@ -1,0 +1,134 @@
+.searchContainer {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+}
+
+.searchWrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  background: #f3f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none;
+  box-sizing: border-box;
+}
+
+.searchWrapper:focus-within {
+  background: #e5e7eb;
+}
+
+.searchIconLeft {
+  color: #9ca3af;
+  font-size: 18px;
+  margin-left: 1rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.searchWrapper:focus-within .searchIconLeft {
+  color: #6b7280;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 0.875rem 0.5rem;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  outline: none;
+  color: #1f2937;
+  font-weight: 400;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.filterButton {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.filterIcon {
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+.filterButton:hover .filterIcon {
+  color: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .searchContainer {
+    padding: 0.75rem 1rem;
+  }
+
+  .searchWrapper {
+    border-radius: 10px;
+  }
+
+  .searchInput {
+    padding: 0.875rem 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .searchIconLeft {
+    font-size: 17px;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+  }
+
+  .filterButton {
+    padding: 0.75rem 1rem;
+  }
+
+  .filterIcon {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchContainer {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .searchWrapper {
+    border-radius: 8px;
+  }
+
+  .searchInput {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .searchIconLeft {
+    font-size: 16px;
+    margin-left: 0.875rem;
+    margin-right: 0.5rem;
+  }
+
+  .filterButton {
+    padding: 0.625rem 0.875rem;
+  }
+
+  .filterIcon {
+    font-size: 1rem;
+  }
+}
+

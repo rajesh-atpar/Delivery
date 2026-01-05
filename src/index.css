@@ -36,6 +36,12 @@ body {
   box-sizing: border-box;
 }
 
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;

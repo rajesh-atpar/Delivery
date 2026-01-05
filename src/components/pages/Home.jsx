@@ -70,14 +70,6 @@ const Home = () => {
     }
   ];
 
-  const categories = [
-    { name: "Fruits", icon: "🍎", count: 150 },
-    { name: "Vegetables", icon: "🥕", count: 180 },
-    { name: "Groceries", icon: "🛒", count: 320 },
-    { name: "Dairy Products", icon: "🥛", count: 95 },
-    { name: "Beverages", icon: "🥤", count: 120 },
-    { name: "Snacks", icon: "🍿", count: 200 }
-  ];
 
   return (
     <div className={styles.home}>
@@ -131,26 +123,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className={styles.categoriesSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Shop by Category</h2>
-          <p className={styles.sectionSubtitle}>Browse fresh produce and groceries by category</p>
-        </div>
-        <div className={styles.categoriesGrid}>
-          {categories.map((category, index) => (
-            <Link
-              key={index}
-              to={`/categories/${category.name.toLowerCase()}`}
-              className={styles.categoryCard}
-            >
-              <div className={styles.categoryIcon}>{category.icon}</div>
-              <h3 className={styles.categoryName}>{category.name}</h3>
-              <p className={styles.categoryCount}>{category.count} Products</p>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       {/* Featured Products Section */}
       <section className={styles.featuredSection}>
