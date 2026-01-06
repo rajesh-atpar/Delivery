@@ -11,6 +11,13 @@
   overflow-x: hidden;
 }
 
+/* Hide categories section on laptop/desktop view */
+@media (min-width: 769px) {
+  .categoriesSection {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .categoriesSection {
     padding-bottom: 5rem;

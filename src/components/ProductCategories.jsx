@@ -4,73 +4,73 @@ import styles from "./ProductCategories.module.css";
 const ProductCategories = () => {
   const categories = [
     {
-      title: "Revamp your home in style",
+      title: "Fresh Vegetables",
       items: [
         {
-          image: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400&h=400&fit=crop",
-          text: "Cushion covers, bedsheets & more"
+          image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop",
+          text: "Bell Peppers & Capsicum"
         },
         {
-          image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
-          text: "Figurines, vases & more"
+          image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop",
+          text: "Carrots & Root Vegetables"
         },
         {
-          image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
-          text: "Home storage"
+          image: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=400&h=400&fit=crop",
+          text: "Broccoli & Cauliflower"
         },
         {
-          image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop",
-          text: "Lighting solutions"
+          image: "https://images.unsplash.com/photo-1603048297172-c92544745067?w=400&h=400&fit=crop",
+          text: "Leafy Greens & More"
         }
       ],
       linkText: "Explore all",
-      linkPath: "/home-decor"
+      linkPath: "/categories/vegetables"
     },
     {
-      title: "Bulk order discounts + Up to 18% GST savings",
+      title: "Staples & Groceries",
       items: [
         {
-          image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
-          text: "Up to 45% off | Laptops"
+          image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
+          text: "Rice & Grains"
         },
         {
-          image: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=400&h=400&fit=crop",
-          text: "Up to 60% off | Kitchen appliances"
+          image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop",
+          text: "Cooking Oils"
         },
         {
-          image: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=400&fit=crop",
-          text: "Min. 50% off | Office furniture"
+          image: "https://images.unsplash.com/photo-1551892584-5b5c0e5b8b5b?w=400&h=400&fit=crop",
+          text: "Pulses & Lentils"
         },
         {
-          image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-          text: "Up to 60% off | for Business Purchases"
-        }
-      ],
-      linkText: "Create a free account",
-      linkPath: "/business"
-    },
-    {
-      title: "Appliances for your home | Up to 55% off",
-      items: [
-        {
-          image: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400&h=400&fit=crop",
-          text: "Air conditioners"
-        },
-        {
-          image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400&h=400&fit=crop",
-          text: "Refrigerators"
-        },
-        {
-          image: "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=400&h=400&fit=crop",
-          text: "Microwaves"
-        },
-        {
-          image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-          text: "Washing machines"
+          image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
+          text: "Flour & Atta"
         }
       ],
       linkText: "See more",
-      linkPath: "/appliances"
+      linkPath: "/categories/staples"
+    },
+    {
+      title: "Dairy Products",
+      items: [
+        {
+          image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=400&fit=crop",
+          text: "Fresh Milk"
+        },
+        {
+          image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=400&fit=crop",
+          text: "Yogurt & Curd"
+        },
+        {
+          image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400&h=400&fit=crop",
+          text: "Cheese & Butter"
+        },
+        {
+          image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=400&fit=crop",
+          text: "Paneer & More"
+        }
+      ],
+      linkText: "Explore all",
+      linkPath: "/categories/dairy"
     }
   ];
 

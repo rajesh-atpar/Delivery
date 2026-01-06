@@ -8,6 +8,13 @@
   overflow-x: hidden;
 }
 
+/* Add padding for fixed navbar on laptop view */
+@media (min-width: 769px) {
+  #root {
+    padding-top: 70px;
+  }
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

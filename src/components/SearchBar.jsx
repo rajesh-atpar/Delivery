@@ -11,6 +11,10 @@ const SearchBar = () => {
           type="text"
           placeholder="Search"
           className={styles.searchInput}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
         />
         <button className={styles.filterButton} aria-label="Filter">
           <FaFilter className={styles.filterIcon} />
