@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { FaShoppingCart } from "react-icons/fa";
 import styles from "./Products.module.css";
 
 const Products = () => {
-  const products = [
+  const [products, setProducts] = useState([]);
+  const [addedToCart, setAddedToCart] = useState({});
+
+  // Default products (same as Admin page)
+  const defaultProducts = [
     {
       id: 1,
       name: "Fresh Organic Apples",
@@ -89,6 +94,123 @@ const Products = () => {
     }
   ];
 
+  // Load products from localStorage (shared with Admin page)
+  useEffect(() => {
+    const loadProducts = () => {
+      const savedProducts = localStorage.getItem("adminProducts");
+      if (savedProducts) {
+        try {
+          const parsedProducts = JSON.parse(savedProducts);
+          setProducts(parsedProducts);
+        } catch (error) {
+          console.error("Error parsing products:", error);
+          setProducts(defaultProducts);
+        }
+      } else {
+        // Initialize with default products if none exist
+        setProducts(defaultProducts);
+        localStorage.setItem("adminProducts", JSON.stringify(defaultProducts));
+      }
+    };
+
+    loadProducts();
+
+    // Listen for storage changes (when admin updates products)
+    const handleStorageChange = (e) => {
+      if (e.key === "adminProducts") {
+        if (e.newValue) {
+          try {
+            const parsedProducts = JSON.parse(e.newValue);
+            setProducts(parsedProducts);
+          } catch (error) {
+            console.error("Error parsing products:", error);
+          }
+        } else {
+          setProducts(defaultProducts);
+        }
+      }
+    };
+
+    // Listen for custom event (for same-tab updates)
+    const handleCustomStorageChange = () => {
+      loadProducts();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("productsUpdated", handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("productsUpdated", handleCustomStorageChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load cart items to check which products are already in cart
+  useEffect(() => {
+    const updateCartStatus = () => {
+      const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      const cartProductIds = {};
+      cartItems.forEach(item => {
+        cartProductIds[item.id] = true;
+      });
+      setAddedToCart(cartProductIds);
+    };
+
+    updateCartStatus();
+
+    // Listen for cart updates
+    const handleCartUpdate = () => {
+      updateCartStatus();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    window.addEventListener("storage", (e) => {
+      if (e.key === "cartItems") {
+        updateCartStatus();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
+  }, []);
+
+  const handleAddToCart = (product) => {
+    // Get existing cart items
+    const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    
+    // Check if product already exists in cart
+    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
+    
+    if (existingItemIndex >= 0) {
+      // If exists, increase quantity
+      cartItems[existingItemIndex].quantity += 1;
+    } else {
+      // If not exists, add new item with quantity 1
+      cartItems.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        quantity: 1
+      });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    
+    // Update addedToCart state
+    setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+    
+    // Dispatch event for cart updates
+    window.dispatchEvent(new Event("cartUpdated"));
+    
+    // Show feedback (optional - you can add a toast notification here)
+    console.log(`${product.name} added to cart!`);
+  };
+
   return (
     <div className={styles.productsPage}>
       <div className={styles.container}>
@@ -114,6 +236,14 @@ const Products = () => {
                 <h3 className={styles.productName}>{product.name}</h3>
                 <div className={styles.productFooter}>
                   <span className={styles.productPrice}>{product.price}</span>
+                  <button 
+                    className={`${styles.cartButton} ${addedToCart[product.id] ? styles.added : ''}`}
+                    onClick={() => handleAddToCart(product)}
+                    aria-label={`Add ${product.name} to cart`}
+                  >
+                    <FaShoppingCart />
+                    {addedToCart[product.id] ? "Added" : "Add"}
+                  </button>
                 </div>
               </div>
             </div>

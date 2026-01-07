@@ -6,27 +6,15 @@ const CategoriesPage = () => {
   const { categoryName } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // All products data
-  const allProducts = [
+  const [allProducts, setAllProducts] = useState([]);
+
+  // Default products (same as Admin and Products pages)
+  const defaultProducts = [
     {
       id: 1,
       name: "Fresh Organic Apples",
       price: "₹99",
       image: "https://plus.unsplash.com/premium_photo-1667049292983-d2524dd0ef08?q=80&w=1149&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      category: "Fruits"
-    },
-    {
-      id: 4,
-      name: "Fresh Bananas",
-      price: "₹59",
-      image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop",
-      category: "Fruits"
-    },
-    {
-      id: 7,
-      name: "Fresh Strawberries",
-      price: "₹119",
-      image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=400&fit=crop",
       category: "Fruits"
     },
     {
@@ -37,11 +25,39 @@ const CategoriesPage = () => {
       category: "Vegetables"
     },
     {
+      id: 3,
+      name: "Premium Rice 5kg",
+      price: "₹259",
+      image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
+      category: "Grains"
+    },
+    {
+      id: 4,
+      name: "Fresh Bananas",
+      price: "₹59",
+      image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop",
+      category: "Fruits"
+    },
+    {
       id: 5,
       name: "Fresh Carrots",
       price: "₹49",
       image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop",
       category: "Vegetables"
+    },
+    {
+      id: 6,
+      name: "Organic Olive Oil",
+      price: "₹319",
+      image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop",
+      category: "Oils"
+    },
+    {
+      id: 7,
+      name: "Fresh Strawberries",
+      price: "₹119",
+      image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=400&fit=crop",
+      category: "Fruits"
     },
     {
       id: 8,
@@ -77,22 +93,60 @@ const CategoriesPage = () => {
       price: "₹259",
       image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400&h=400&fit=crop",
       category: "Meat"
-    },
-    {
-      id: 3,
-      name: "Premium Rice 5kg",
-      price: "₹259",
-      image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
-      category: "Grains"
-    },
-    {
-      id: 6,
-      name: "Organic Olive Oil",
-      price: "₹319",
-      image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop",
-      category: "Oils"
     }
   ];
+
+  // Load products from localStorage (shared with Admin page)
+  useEffect(() => {
+    const loadProducts = () => {
+      const savedProducts = localStorage.getItem("adminProducts");
+      if (savedProducts) {
+        try {
+          const parsedProducts = JSON.parse(savedProducts);
+          setAllProducts(parsedProducts);
+        } catch (error) {
+          console.error("Error parsing products:", error);
+          setAllProducts(defaultProducts);
+        }
+      } else {
+        // Initialize with default products if none exist
+        setAllProducts(defaultProducts);
+        localStorage.setItem("adminProducts", JSON.stringify(defaultProducts));
+      }
+    };
+
+    loadProducts();
+
+    // Listen for storage changes (when admin updates products)
+    const handleStorageChange = (e) => {
+      if (e.key === "adminProducts") {
+        if (e.newValue) {
+          try {
+            const parsedProducts = JSON.parse(e.newValue);
+            setAllProducts(parsedProducts);
+          } catch (error) {
+            console.error("Error parsing products:", error);
+          }
+        } else {
+          setAllProducts(defaultProducts);
+        }
+      }
+    };
+
+    // Listen for custom event (for same-tab updates)
+    const handleCustomStorageChange = () => {
+      loadProducts();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("productsUpdated", handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("productsUpdated", handleCustomStorageChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const categories = [
     { 

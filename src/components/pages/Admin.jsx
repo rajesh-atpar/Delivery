@@ -71,9 +71,12 @@ const Admin = () => {
   }, []);
 
   // Save products to localStorage whenever products change
+  // Also dispatch event to update Products page in real-time
   useEffect(() => {
     if (products.length > 0) {
       localStorage.setItem("adminProducts", JSON.stringify(products));
+      // Dispatch custom event to notify Products page of changes
+      window.dispatchEvent(new Event("productsUpdated"));
     }
   }, [products]);
 

@@ -1,33 +1,82 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { FaShoppingCart, FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import styles from "./Cart.module.css";
 
 const Cart = () => {
-  const cartItems = [
-    {
-      id: 1,
-      name: "Fresh Organic Apples",
-      price: "₹99",
-      quantity: 2,
-      image: "https://plus.unsplash.com/premium_photo-1667049292983-d2524dd0ef08?q=80&w=1149&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-    },
-    {
-      id: 2,
-      name: "Fresh Tomatoes",
-      price: "₹69",
-      quantity: 1,
-      image: "https://plus.unsplash.com/premium_photo-1724849418331-97502da20f86?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTAzfHxmcmVzaCUyMHRvbWF0b3xlbnwwfHwwfHx8MA%3D%3D"
-    },
-    {
-      id: 3,
-      name: "Premium Rice 5kg",
-      price: "₹259",
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop"
-    }
-  ];
+  const [cartItems, setCartItems] = useState([]);
 
-  const total = cartItems.reduce((sum, item) => sum + parseFloat(item.price.replace('₹', '')) * item.quantity, 0);
+  // Load cart items from localStorage
+  useEffect(() => {
+    const loadCartItems = () => {
+      const savedCartItems = localStorage.getItem("cartItems");
+      if (savedCartItems) {
+        try {
+          const parsedItems = JSON.parse(savedCartItems);
+          setCartItems(parsedItems);
+        } catch (error) {
+          console.error("Error parsing cart items:", error);
+          setCartItems([]);
+        }
+      } else {
+        setCartItems([]);
+      }
+    };
+
+    loadCartItems();
+
+    // Listen for cart updates
+    const handleCartUpdate = () => {
+      loadCartItems();
+    };
+
+    const handleStorageChange = (e) => {
+      if (e.key === "cartItems") {
+        loadCartItems();
+      }
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const handleQuantityChange = (itemId, change) => {
+    const updatedItems = cartItems.map(item => {
+      if (item.id === itemId) {
+        const newQuantity = item.quantity + change;
+        if (newQuantity < 1) return null; // Remove if quantity becomes 0
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }).filter(item => item !== null); // Remove null items
+
+    setCartItems(updatedItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  const handleRemoveItem = (itemId) => {
+    const updatedItems = cartItems.filter(item => item.id !== itemId);
+    setCartItems(updatedItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  const total = cartItems.reduce((sum, item) => {
+    try {
+      const priceStr = item.price ? String(item.price).replace('₹', '').replace(',', '') : '0';
+      const price = parseFloat(priceStr) || 0;
+      return sum + price * (item.quantity || 1);
+    } catch (error) {
+      console.error("Error calculating price for item:", item, error);
+      return sum;
+    }
+  }, 0);
 
   return (
     <div className={styles.cart}>
@@ -57,10 +106,23 @@ const Cart = () => {
       <section className={styles.cartSection}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Cart Items</h2>
-          <p className={styles.sectionSubtitle}>{cartItems.length} items in your cart</p>
+          <p className={styles.sectionSubtitle}>
+            {cartItems.length === 0 
+              ? "Your cart is empty" 
+              : `${cartItems.reduce((sum, item) => sum + item.quantity, 0)} item${cartItems.reduce((sum, item) => sum + item.quantity, 0) !== 1 ? 's' : ''} in your cart`}
+          </p>
         </div>
-        <div className={styles.cartItemsGrid}>
-          {cartItems.map((item) => (
+        {cartItems.length === 0 ? (
+          <div className={styles.emptyCart}>
+            <FaShoppingCart className={styles.emptyCartIcon} />
+            <p className={styles.emptyCartText}>Your cart is empty</p>
+            <Link to="/products" className={styles.emptyCartButton}>
+              Start Shopping
+            </Link>
+          </div>
+        ) : (
+          <div className={styles.cartItemsGrid}>
+            {cartItems.map((item) => (
             <div key={item.id} className={styles.cartItemCard}>
               <div className={styles.cartItemImage}>
                 <img 
@@ -74,22 +136,36 @@ const Cart = () => {
                 <div className={styles.cartItemPriceRow}>
                   <span className={styles.cartItemPrice}>{item.price}</span>
                   <div className={styles.quantityControls}>
-                    <button className={styles.quantityButton} aria-label="Decrease quantity">
+                    <button 
+                      className={styles.quantityButton} 
+                      onClick={() => handleQuantityChange(item.id, -1)}
+                      aria-label="Decrease quantity"
+                    >
                       <FaMinus />
                     </button>
                     <span className={styles.quantity}>{item.quantity}</span>
-                    <button className={styles.quantityButton} aria-label="Increase quantity">
+                    <button 
+                      className={styles.quantityButton} 
+                      onClick={() => handleQuantityChange(item.id, 1)}
+                      aria-label="Increase quantity"
+                    >
                       <FaPlus />
                     </button>
                   </div>
                 </div>
-                <button className={styles.removeButton} aria-label={`Remove ${item.name}`}>
+                <button 
+                  className={styles.removeButton} 
+                  onClick={() => handleRemoveItem(item.id)}
+                  aria-label={`Remove ${item.name}`}
+                >
                   <FaTrash /> Remove
                 </button>
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
+        {cartItems.length > 0 && (
         <div className={styles.cartSummary}>
           <div className={styles.summaryCard}>
             <h3 className={styles.summaryTitle}>Order Summary</h3>
@@ -110,6 +186,7 @@ const Cart = () => {
             </Link>
           </div>
         </div>
+        )}
       </section>
 
       {/* Benefits Section */}
