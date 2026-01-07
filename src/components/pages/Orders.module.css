@@ -15,6 +15,14 @@
   }
 }
 
+/* Laptop/Desktop - show orders page (do not affect mobile) */
+@media (min-width: 769px) {
+  .orders {
+    display: block;
+    padding-bottom: 2rem;
+  }
+}
+
 /* Header */
 .header {
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);

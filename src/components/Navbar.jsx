@@ -280,26 +280,51 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Full Screen Menu */}
+      {/* Floating Sidebar Menu */}
       <div className={`${styles.fullScreenMenu} ${isMenuOpen ? styles.menuOpen : ""}`}>
+        <div className={styles.menuBackdrop} onClick={handleLinkClick}></div>
         <div className={styles.menuContent}>
-          <ul className={styles.navLinks}>
-            <li>
-              <Link to="/" className={styles.navLink} onClick={handleLinkClick}>Home</Link>
-            </li>
-            <li>
-              <Link to="/products" className={styles.navLink} onClick={handleLinkClick}>Products</Link>
-            </li>
-            <li>
-              <Link to="/categories" className={styles.navLink} onClick={handleLinkClick}>Categories</Link>
-            </li>
-            <li>
-              <Link to="/about" className={styles.navLink} onClick={handleLinkClick}>About</Link>
-            </li>
-            <li>
-              <Link to="/contact" className={styles.navLink} onClick={handleLinkClick}>Contact</Link>
-            </li>
-          </ul>
+          <div className={styles.menuHeader}>
+            <Link to="/" className={styles.menuLogo} onClick={handleLinkClick}>
+              <span className={styles.menuLogoText}>PPK</span>
+            </Link>
+            <button 
+              className={styles.menuCloseButton}
+              onClick={handleLinkClick}
+              aria-label="Close Menu"
+            >
+              <FaTimes />
+            </button>
+          </div>
+          <nav className={styles.menuNav}>
+            <ul className={styles.navLinks}>
+              <li>
+                <Link to="/" className={styles.navLink} onClick={handleLinkClick}>
+                  <span className={styles.navLinkText}>Home</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" className={styles.navLink} onClick={handleLinkClick}>
+                  <span className={styles.navLinkText}>Products</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/categories" className={styles.navLink} onClick={handleLinkClick}>
+                  <span className={styles.navLinkText}>Categories</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className={styles.navLink} onClick={handleLinkClick}>
+                  <span className={styles.navLinkText}>About</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className={styles.navLink} onClick={handleLinkClick}>
+                  <span className={styles.navLinkText}>Contact</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
 

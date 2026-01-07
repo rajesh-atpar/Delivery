@@ -15,6 +15,18 @@
   }
 }
 
+/* Laptop/Desktop - show page and offset sticky header below fixed navbar */
+@media (min-width: 769px) {
+  .editProfile {
+    display: block;
+    padding-bottom: 2rem;
+  }
+
+  .header {
+    top: 70px;
+  }
+}
+
 /* Header */
 .header {
   display: flex;

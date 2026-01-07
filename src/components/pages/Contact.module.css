@@ -7,9 +7,23 @@
   box-sizing: border-box;
 }
 
+@media (min-width: 769px) {
+  .contactPage {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Laptop alignment - keep consistent container width */
+@media (min-width: 769px) {
+  .container {
+    max-width: 1400px;
+  }
 }
 
 .header {
@@ -181,6 +195,103 @@
 
 .submitButton:active {
   transform: translateY(0);
+}
+
+@media (min-width: 769px) {
+  /* Color overrides for laptop view - Green theme */
+  .title {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+
+  .infoIcon {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+  }
+
+  .input:focus,
+  .textarea:focus {
+    border-color: #93bd57 !important;
+    box-shadow: 0 0 0 3px rgba(147, 189, 87, 0.1) !important;
+  }
+
+  .submitButton {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    box-shadow: 0 4px 12px rgba(147, 189, 87, 0.3) !important;
+  }
+
+  .submitButton:hover {
+    box-shadow: 0 6px 20px rgba(147, 189, 87, 0.4) !important;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .header {
+    margin-bottom: 4rem;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+  }
+
+  .contentGrid {
+    gap: 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .sectionText {
+    font-size: 1.125rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .infoCards {
+    gap: 1.75rem;
+  }
+
+  .infoCard {
+    padding: 2rem;
+  }
+
+  .infoTitle {
+    font-size: 1.25rem;
+  }
+
+  .infoText {
+    font-size: 1rem;
+  }
+
+  .contactForm {
+    padding: 3rem;
+  }
+
+  .label {
+    font-size: 1rem;
+  }
+
+  .input,
+  .textarea {
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+  }
+
+  .submitButton {
+    padding: 1.125rem 2.5rem;
+    font-size: 1.125rem;
+  }
 }
 
 @media (max-width: 968px) {

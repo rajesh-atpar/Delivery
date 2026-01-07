@@ -7,9 +7,23 @@
   box-sizing: border-box;
 }
 
+@media (min-width: 769px) {
+  .aboutPage {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Laptop alignment - keep consistent container width */
+@media (min-width: 769px) {
+  .container {
+    max-width: 1400px;
+  }
 }
 
 .heroSection {
@@ -148,6 +162,77 @@
   margin: 0;
   max-width: 800px;
   margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  /* Color overrides for laptop view - Green theme */
+  .heroTitle {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+
+  .featureIcon {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    box-shadow: 0 8px 24px rgba(147, 189, 87, 0.3) !important;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .heroSection {
+    margin-bottom: 5rem;
+  }
+
+  .heroTitle {
+    font-size: 3.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.375rem;
+  }
+
+  .contentSection {
+    gap: 4rem;
+    margin-bottom: 5rem;
+  }
+
+  .sectionTitle {
+    font-size: 2.25rem;
+  }
+
+  .paragraph {
+    font-size: 1.125rem;
+  }
+
+  .featuresSection {
+    margin-bottom: 5rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.5rem;
+    max-width: 1400px;
+    margin: 2rem auto 0;
+  }
+
+  .featureCard {
+    padding: 3rem 2rem;
+  }
+
+  .missionSection {
+    padding: 4rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .missionText {
+    font-size: 1.375rem;
+  }
 }
 
 @media (max-width: 968px) {

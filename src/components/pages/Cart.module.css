@@ -15,6 +15,19 @@
   }
 }
 
+/* Laptop/Desktop - show cart page (do not affect mobile) */
+@media (min-width: 769px) {
+  .cart {
+    display: block;
+    padding-bottom: 2rem;
+  }
+
+  /* reduce overly large top padding on desktop (navbar already fixed with root padding) */
+  .hero {
+    padding: 3rem 2rem;
+  }
+}
+
 /* Hero Section */
 .hero {
   max-width: 1400px;
