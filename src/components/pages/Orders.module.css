@@ -1,0 +1,532 @@
+/* Mobile Only - Hide on Desktop */
+.orders {
+  display: none;
+  min-height: 100vh;
+  background: #f5f7fa;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding-bottom: 5rem;
+}
+
+@media (max-width: 768px) {
+  .orders {
+    display: block;
+  }
+}
+
+/* Laptop/Desktop - show orders page (do not affect mobile) */
+@media (min-width: 769px) {
+  .orders {
+    display: block;
+    padding-bottom: 2rem;
+  }
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  padding: 1.75rem 1rem;
+  color: white;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.3px;
+}
+
+.pageSubtitle {
+  font-size: 0.9375rem;
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Section */
+.section {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 1.25rem 0;
+  letter-spacing: -0.2px;
+  padding-left: 0.25rem;
+}
+
+/* Orders List */
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Order Card */
+.orderCard {
+  background: white;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+/* Order Header */
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.orderInfo {
+  flex: 1;
+}
+
+.orderNumber {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.375rem 0;
+  letter-spacing: -0.2px;
+}
+
+.orderDate {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.statusBadge {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+/* Items Preview */
+.itemsPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.itemPreview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.itemImage {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemName {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.375rem 0;
+  line-height: 1.4;
+}
+
+.itemQuantity {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.moreItems {
+  font-size: 0.8125rem;
+  color: #3b82f6;
+  font-weight: 600;
+  margin: 0;
+  padding-left: 82px;
+}
+
+/* Order Total */
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.totalPrice {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #1e40af;
+  letter-spacing: -0.3px;
+}
+
+/* Tracking Section */
+.trackingSection {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.trackingHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.trackingIcon {
+  font-size: 1.25rem;
+  color: #3b82f6;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.timelineItem:last-child {
+  margin-bottom: 0;
+}
+
+.timelineConnector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.timelineDot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timelineDot.completed {
+  background: #10b981 !important;
+}
+
+.timelineDot.current {
+  border: 3px solid #3b82f6;
+  background: white !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.checkIcon {
+  color: white;
+  font-size: 0.875rem;
+}
+
+.stepIcon {
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+.timelineLine {
+  width: 3px;
+  height: 50px;
+  margin-top: 6px;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.timelineContent {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+
+.stepStatus {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #9ca3af;
+  margin: 0 0 0.375rem 0;
+}
+
+.stepStatus.completedText {
+  color: #1a202c;
+}
+
+.stepStatus.currentText {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.stepDate {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Delivery Info */
+.deliveryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.deliveryRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.infoIcon {
+  font-size: 1.125rem;
+  color: #64748b;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.infoContent {
+  flex: 1;
+}
+
+.infoLabel {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 0.375rem 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infoValue {
+  font-size: 0.9375rem;
+  color: #1a202c;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* Expand Button */
+.expandButton {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  min-height: 48px;
+}
+
+.expandButton:active {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.3);
+}
+
+/* Expanded Details */
+.expandedDetails {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid #f1f5f9;
+}
+
+.detailsTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.2px;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detailImage {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.detailInfo {
+  flex: 1;
+}
+
+.detailName {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.375rem 0;
+}
+
+.detailPrice {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+}
+
+.emptyTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.75rem 0;
+}
+
+.emptyText {
+  font-size: 0.9375rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .header {
+    padding: 1.5rem 0.875rem;
+  }
+
+  .pageTitle {
+    font-size: 1.625rem;
+  }
+
+  .section {
+    padding: 0.875rem;
+  }
+
+  .orderCard {
+    padding: 1rem;
+  }
+
+  .timelineDot {
+    width: 36px;
+    height: 36px;
+  }
+
+  .timelineLine {
+    height: 45px;
+  }
+
+  .itemImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .detailImage {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .section {
+    padding: 0.75rem;
+  }
+
+  .orderCard {
+    padding: 0.875rem;
+  }
+
+  .timelineDot {
+    width: 32px;
+    height: 32px;
+  }
+
+  .itemImage {
+    width: 55px;
+    height: 55px;
+  }
+
+  .detailImage {
+    width: 55px;
+    height: 55px;
+  }
+}

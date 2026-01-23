@@ -1,0 +1,294 @@
+.notificationSettings {
+  display: none;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .notificationSettings {
+    display: block;
+    padding-bottom: 5rem;
+  }
+}
+
+/* Laptop/Desktop - show page and offset sticky header below fixed navbar */
+@media (min-width: 769px) {
+  .notificationSettings {
+    display: block;
+    padding-bottom: 2rem;
+  }
+
+  .header {
+    top: 70px;
+  }
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #1f2937;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.backButton:active {
+  background: #e5e7eb;
+  transform: scale(0.95);
+}
+
+.backIcon {
+  font-size: 1rem;
+}
+
+.pageTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.placeholder {
+  width: 40px;
+}
+
+/* Settings Section */
+.settingsSection {
+  padding: 1.5rem 1rem 6rem;
+}
+
+.group {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.groupIcon {
+  font-size: 1.5rem;
+  color: #3b82f6;
+}
+
+.groupTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.settingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.settingItem:hover {
+  background: #f3f4f6;
+}
+
+.settingInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.settingIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.settingContent {
+  flex: 1;
+}
+
+.settingLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.settingDescription {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: 0.3s;
+  border-radius: 28px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background-color: #3b82f6;
+}
+
+.toggleInput:checked + .toggleSlider:before {
+  transform: translateX(24px);
+}
+
+.toggleInput:active + .toggleSlider {
+  opacity: 0.8;
+}
+
+/* Button Container */
+.buttonContainer {
+  position: fixed;
+  bottom: 5rem;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  z-index: 10;
+}
+
+.saveButton {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.saveButton:active {
+  transform: scale(0.98);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 1rem 0.75rem;
+  }
+
+  .pageTitle {
+    font-size: 1.125rem;
+  }
+
+  .settingsSection {
+    padding: 1.25rem 0.75rem 6rem;
+  }
+
+  .group {
+    padding: 1.25rem;
+  }
+
+  .settingItem {
+    padding: 0.875rem;
+  }
+
+  .settingIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .settingLabel {
+    font-size: 0.95rem;
+  }
+
+  .settingDescription {
+    font-size: 0.8rem;
+  }
+
+  .buttonContainer {
+    padding: 0.875rem 0.75rem;
+  }
+}
+

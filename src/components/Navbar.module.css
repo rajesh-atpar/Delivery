@@ -1,0 +1,1359 @@
+.navbar {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Fixed navbar for laptop view */
+@media (min-width: 769px) {
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logoIcon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.logoText {
+  background: linear-gradient(45deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.locationContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+}
+
+.locationContainer:hover {
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.locationContainer:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* Desktop Navigation Links */
+.desktopNavLinks {
+  display: none;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.desktopNavLink {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  position: relative;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border-radius: 8px;
+}
+
+.desktopNavLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: #ffffff;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.desktopNavLink:hover::after {
+  width: 80%;
+}
+
+.desktopNavLink:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Desktop Search Bar */
+.desktopSearchContainer {
+  display: none;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 2rem;
+}
+
+.desktopSearchWrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.desktopSearchWrapper:focus-within {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.desktopSearchIcon {
+  color: white;
+  font-size: 16px;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.desktopSearchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+  padding: 0.25rem 0;
+}
+
+.desktopSearchInput::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Desktop Profile Icon */
+.profileIcon {
+  display: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.profileIcon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.profileIconSvg {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+/* Floating Profile Panel */
+.profilePanelOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Only show profile panel on laptop view */
+@media (max-width: 768px) {
+  .profilePanelOverlay {
+    display: none !important;
+    pointer-events: none !important;
+  }
+}
+
+.profilePanelOverlay.profilePanelOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.profilePanelBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.profilePanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 450px;
+  max-width: 90vw;
+  height: 100vh;
+  background: white;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 10001;
+}
+
+.profilePanelOverlay.profilePanelOpen .profilePanel {
+  transform: translateX(0);
+}
+
+.profilePanelHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.profilePanelTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.profilePanelClose {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.profilePanelClose:hover {
+  background: rgba(236, 234, 234, 0.3);
+  transform: rotate(90deg);
+}
+
+.profilePanelContent {
+  padding: 2rem;
+  flex: 1;
+}
+
+.profilePanelHeaderSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+.profilePanelAvatarContainer {
+  position: relative;
+}
+
+.profilePanelAvatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.profilePanelAvatarIcon {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.profilePanelEditButton {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.profilePanelEditButton:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.profilePanelEditIcon {
+  font-size: 12px;
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.profilePanelEditButton:hover .profilePanelEditIcon {
+  color: white;
+}
+
+.profilePanelInfo {
+  text-align: center;
+}
+
+.profilePanelName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.profilePanelEmail {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.profilePanelDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profilePanelDetailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profilePanelSectionTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.profilePanelDetailCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.profilePanelDetailItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profilePanelDetailItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.profilePanelDetailIcon {
+  font-size: 1.125rem;
+  color: #3b82f6;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.profilePanelDetailContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.profilePanelDetailLabel {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profilePanelDetailValue {
+  font-size: 1rem;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.profilePanelStatusActive {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.locationIcon {
+  font-size: 1.1rem;
+  color: white;
+}
+
+.locationText {
+  white-space: nowrap;
+}
+
+.searchContainer {
+  display: none;
+}
+
+.searchWrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+
+.searchWrapper:focus-within {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 6px 30px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+.searchIconLeft {
+  color: #3b82f6;
+  font-size: 20px;
+  margin-left: 1.25rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.searchWrapper:focus-within .searchIconLeft {
+  color: #1e40af;
+  transform: scale(1.1);
+}
+
+.searchInput {
+  flex: 1;
+  padding: 1rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  outline: none;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.searchInput::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+.searchButton {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  border: none;
+  padding: 1rem 2rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border-radius: 0;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.searchButton:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.navLinks {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  position: relative;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.navLink:hover {
+  transform: translateY(-2px);
+}
+
+.rightSection {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.iconButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  padding: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.iconButton svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.iconButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cartButton {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.cartButton svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.cartButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid white;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.menuToggle {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hamburger {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.hamburgerOpen {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.hamburgerOpen:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburgerOpen:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburgerOpen:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Full Screen Menu - Now Floating Sidebar */
+.fullScreenMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 9998;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.menuBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.fullScreenMenu.menuOpen {
+  pointer-events: auto;
+}
+
+.fullScreenMenu.menuOpen .menuBackdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menuContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
+  max-width: 85vw;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.fullScreenMenu.menuOpen .menuContent {
+  transform: translateX(0);
+}
+
+.menuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  flex-shrink: 0;
+}
+
+.menuLogo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.menuLogoText {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+  background: linear-gradient(45deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.menuCloseButton {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 1.125rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.menuCloseButton:hover,
+.menuCloseButton:active {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg) scale(1.05);
+}
+
+.menuNav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 0;
+  background: #ffffff;
+}
+
+.menuNav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menuNav::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+
+.menuNav::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.menuNav::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.fullScreenMenu .navLinks {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fullScreenMenu .navLink {
+  color: #1f2937;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.875rem 1.25rem;
+  width: 100%;
+  text-align: left;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  box-sizing: border-box;
+  position: relative;
+  background: transparent;
+}
+
+.fullScreenMenu .navLink::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 0;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  border-radius: 0 2px 2px 0;
+  transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fullScreenMenu .navLink:hover,
+.fullScreenMenu .navLink:active {
+  background: #f3f4f6;
+  color: #1e40af;
+  transform: translateX(4px);
+}
+
+.fullScreenMenu .navLink:hover::before,
+.fullScreenMenu .navLink:active::before {
+  height: 60%;
+}
+
+.navLinkText {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+/* Laptop/Desktop View */
+@media (min-width: 769px) {
+  /* Color overrides for laptop view - Green theme */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+  }
+
+  .profilePanelHeader {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+  }
+
+  .profilePanelAvatar {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+  }
+
+  .profilePanelEditButton:hover {
+    background: #93bd57 !important;
+    border-color: #93bd57 !important;
+  }
+
+  .profilePanelDetailIcon {
+    color: #93bd57 !important;
+  }
+
+  .desktopSearchWrapper:focus-within {
+    border-color: rgba(147, 189, 87, 0.4) !important;
+  }
+
+  .menuHeader {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+  }
+
+  .fullScreenMenu .navLink:hover,
+  .fullScreenMenu .navLink:active {
+    color: #93bd57 !important;
+  }
+
+  .fullScreenMenu .navLink::before {
+    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+  }
+
+  .container {
+    padding: 1rem 2rem;
+    gap: 2rem;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    flex-shrink: 0;
+    order: 1;
+  }
+
+  .desktopSearchContainer {
+    display: flex;
+    order: 2;
+    flex: 1;
+    max-width: 500px;
+    margin: 0 2rem;
+  }
+
+  .desktopNavLinks {
+    display: flex;
+    order: 3;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .profileIcon {
+    display: flex;
+    order: 4;
+    flex-shrink: 0;
+    margin-left: 1rem;
+  }
+
+  .profilePanelOverlay {
+    display: block;
+  }
+
+  .locationContainer {
+    display: none;
+  }
+
+  .menuToggle {
+    display: none;
+  }
+
+  .fullScreenMenu {
+    display: none;
+  }
+
+  .rightSection {
+    display: none;
+  }
+}
+
+/* Responsive Design - Mobile First */
+@media (max-width: 968px) {
+  .container {
+    padding: 0.875rem 1rem;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .logo {
+    order: 1;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+  }
+
+  .locationContainer {
+    order: 2;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    font-size: 0.8rem;
+    gap: 0.3rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .locationText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .locationIcon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .rightSection {
+    order: 3;
+    flex-shrink: 0;
+    gap: 0.5rem;
+  }
+
+  .menuToggle {
+    display: flex;
+    min-width: 40px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    flex-wrap: nowrap;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+    gap: 0.5rem;
+    order: 1;
+    flex-shrink: 0;
+    min-width: auto;
+  }
+
+  .logoText {
+    font-size: 1.1rem;
+  }
+
+  .locationContainer {
+    order: 2;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    font-size: 0.75rem;
+    gap: 0.3rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .locationText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .locationIcon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .rightSection {
+    order: 3;
+    flex-shrink: 0;
+    margin-left: auto;
+    gap: 0.4rem;
+  }
+
+  .iconButton,
+  .cartButton {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+
+  .cartButton svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .iconButton svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .rightSection {
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+    order: 1;
+    flex-shrink: 0;
+    min-width: auto;
+  }
+
+  .logoText {
+    font-size: 1.1rem;
+  }
+
+  .locationContainer {
+    order: 2;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    font-size: 0.75rem;
+    gap: 0.3rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .locationText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .locationIcon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .rightSection {
+    order: 3;
+    flex-shrink: 0;
+    margin-left: auto;
+    gap: 0.5rem;
+  }
+
+  .iconButton,
+  .cartButton {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .cartButton svg,
+  .iconButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .menuToggle {
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .hamburger,
+  .hamburgerOpen {
+    width: 22px;
+    height: 2.5px;
+  }
+
+  .iconButton,
+  .cartButton {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+
+  .cartButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .iconButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .menuToggle {
+    min-width: 40px;
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+
+  .rightSection {
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .hamburger,
+  .hamburgerOpen {
+    width: 22px;
+    height: 2.5px;
+  }
+
+  .navLinks {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .navLink {
+    padding: 0.875rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0.625rem 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+  }
+
+  .logo {
+    order: 1;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .logoText {
+    font-size: 0.9rem;
+  }
+
+  .locationContainer {
+    order: 2;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    font-size: 0.65rem;
+    gap: 0.2rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .locationText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .locationIcon {
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .rightSection {
+    order: 3;
+    flex-shrink: 0;
+    margin-left: auto;
+    gap: 0.3rem;
+  }
+
+  .iconButton,
+  .cartButton {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    flex-shrink: 0;
+  }
+
+  .cartButton svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .iconButton svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .rightSection {
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+}
+
