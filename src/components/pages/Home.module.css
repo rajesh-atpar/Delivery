@@ -567,47 +567,47 @@
 
 /* Laptop/Desktop View */
 @media (min-width: 769px) {
-  /* Color overrides for laptop view - Green theme */
+  /* Color overrides for laptop view - Blue theme */
   .heroTitle .highlight {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
   }
 
   .primaryButton {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
-    box-shadow: 0 4px 12px rgba(147, 189, 87, 0.3) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
   }
 
   .primaryButton:active {
-    box-shadow: 0 2px 8px rgba(147, 189, 87, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
   }
 
   .secondaryButton {
-    color: #93bd57 !important;
-    border: 2px solid #93bd57 !important;
-    box-shadow: 0 2px 8px rgba(147, 189, 87, 0.15) !important;
+    color: #3b82f6 !important;
+    border: 2px solid #3b82f6 !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15) !important;
   }
 
   .secondaryButton:active {
-    background: #93bd57 !important;
-    border-color: #93bd57 !important;
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
   }
 
   .productPrice {
-    color: #7ba045 !important;
+    color: #1e40af !important;
   }
 
   .viewAllButton {
-    color: #93bd57 !important;
-    border: 2px solid #93bd57 !important;
-    box-shadow: 0 2px 8px rgba(147, 189, 87, 0.15) !important;
+    color: #3b82f6 !important;
+    border: 2px solid #3b82f6 !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15) !important;
   }
 
   .viewAllButton:active {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
-    border-color: #93bd57 !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+    border-color: #3b82f6 !important;
   }
   .hero {
     max-width: 1400px;

@@ -1,3 +1,10 @@
+.quantityButton svg {
+  color: #1e40af !important;
+}
+.quantityButton:active svg,
+.quantityButton:focus svg {
+  color: #8d2424 !important;
+}
 .cart {
   display: none;
   min-height: 100vh;
@@ -497,8 +504,11 @@
   .benefitsSection {
     padding: 3rem 1rem;
   }
-}
+  .quantityButton{
+    color: #10b981;
+  }
 
+}
 @media (max-width: 480px) {
   .hero {
     padding: 1.5rem 0.75rem;
@@ -515,6 +525,8 @@
   .summaryCard {
     padding: 1.5rem;
   }
+  
+
 }
 
 /* Empty Cart Styles */

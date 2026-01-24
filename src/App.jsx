@@ -12,11 +12,9 @@ import NotificationSettings from "./components/pages/NotificationSettings";
 import PrivacySettings from "./components/pages/PrivacySettings";
 import About from "./components/pages/About";
 import Contact from "./components/pages/Contact";
-import CategoriesPage from "./components/pages/CategoriesPage";
 import Admin from "./components/pages/Admin";
 import AdminLogin from "./components/pages/AdminLogin";
 import Categories from "./components/pages/Categories";
-import ProductCategories from "./components/ProductCategories";
 import Loading from "./components/Loading";
 import ImageCarousel from "./components/ImageCarousel";
 import SearchBar from "./components/SearchBar";
@@ -143,13 +141,13 @@ const AppContent = () => {
           <ImageCarousel />
           <SearchBar />
           <Categories />
-          <ProductCategories />
+          
         </>
       )}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/categories" element={<Categories />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/profile" element={<Profile />} />

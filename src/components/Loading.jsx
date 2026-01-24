@@ -19,8 +19,8 @@ const Loading = ({ children }) => {
         <div className={styles.loadingContent}>
           <div className={styles.logoContainer}>
             <img 
-              src="/vite.svg" 
-              alt="Logo" 
+              src="/src/assets/Puscart logo.jpeg" 
+              alt="Puscart Logo" 
               className={styles.logoImage}
             />
           </div>

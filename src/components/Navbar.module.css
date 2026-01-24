@@ -65,6 +65,22 @@
   letter-spacing: -0.5px;
 }
 
+.logoImage {
+  height: 50px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.menuLogoImage {
+  height: 45px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
 .locationContainer {
   display: flex;
   align-items: center;
@@ -924,48 +940,48 @@
 
 /* Laptop/Desktop View */
 @media (min-width: 769px) {
-  /* Color overrides for laptop view - Green theme */
+  /* Color overrides for laptop view - Blue theme */
   .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
   }
 
   .profilePanelHeader {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
   }
 
   .profilePanelAvatar {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
   }
 
   .profilePanelEditButton:hover {
-    background: #93bd57 !important;
-    border-color: #93bd57 !important;
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
   }
 
   .profilePanelDetailIcon {
-    color: #93bd57 !important;
+    color: #3b82f6 !important;
   }
 
   .desktopSearchWrapper:focus-within {
-    border-color: rgba(147, 189, 87, 0.4) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
   }
 
   .menuHeader {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
   }
 
   .fullScreenMenu .navLink:hover,
   .fullScreenMenu .navLink:active {
-    color: #93bd57 !important;
+    color: #3b82f6 !important;
   }
 
   .fullScreenMenu .navLink::before {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
   }
 
   .container {

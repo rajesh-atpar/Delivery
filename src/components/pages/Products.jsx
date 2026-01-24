@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
 import styles from "./Products.module.css";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [addedToCart, setAddedToCart] = useState({});
+  const [cartQuantities, setCartQuantities] = useState({});
 
   // Default products (same as Admin page)
   const defaultProducts = [
@@ -150,11 +150,11 @@ const Products = () => {
   useEffect(() => {
     const updateCartStatus = () => {
       const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-      const cartProductIds = {};
+      const quantities = {};
       cartItems.forEach(item => {
-        cartProductIds[item.id] = true;
+        quantities[item.id] = item.quantity || 1;
       });
-      setAddedToCart(cartProductIds);
+      setCartQuantities(quantities);
     };
 
     updateCartStatus();
@@ -177,17 +177,12 @@ const Products = () => {
   }, []);
 
   const handleAddToCart = (product) => {
-    // Get existing cart items
     const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-    
-    // Check if product already exists in cart
     const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
     
     if (existingItemIndex >= 0) {
-      // If exists, increase quantity
       cartItems[existingItemIndex].quantity += 1;
     } else {
-      // If not exists, add new item with quantity 1
       cartItems.push({
         id: product.id,
         name: product.name,
@@ -198,17 +193,38 @@ const Products = () => {
       });
     }
     
-    // Save to localStorage
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    
-    // Update addedToCart state
-    setAddedToCart(prev => ({ ...prev, [product.id]: true }));
-    
-    // Dispatch event for cart updates
+    setCartQuantities(prev => ({
+      ...prev,
+      [product.id]: (prev[product.id] || 0) + 1
+    }));
     window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  const handleQuantityChange = (product, change) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
     
-    // Show feedback (optional - you can add a toast notification here)
-    console.log(`${product.name} added to cart!`);
+    if (existingItemIndex >= 0) {
+      const newQuantity = cartItems[existingItemIndex].quantity + change;
+      if (newQuantity <= 0) {
+        cartItems.splice(existingItemIndex, 1);
+        setCartQuantities(prev => {
+          const updated = { ...prev };
+          delete updated[product.id];
+          return updated;
+        });
+      } else {
+        cartItems[existingItemIndex].quantity = newQuantity;
+        setCartQuantities(prev => ({
+          ...prev,
+          [product.id]: newQuantity
+        }));
+      }
+    }
+    
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   return (
@@ -236,18 +252,39 @@ const Products = () => {
                 <h3 className={styles.productName}>{product.name}</h3>
                 <div className={styles.productFooter}>
                   <span className={styles.productPrice}>{product.price}</span>
-                  <button 
-                    className={`${styles.cartButton} ${addedToCart[product.id] ? styles.added : ''}`}
-                    onClick={() => handleAddToCart(product)}
-                    aria-label={`Add ${product.name} to cart`}
-                  >
-                    <FaShoppingCart />
-                    {addedToCart[product.id] ? "Added" : "Add"}
-                  </button>
-                </div>
+                  {cartQuantities[product.id] ? (
+                    <div className={styles.quantityControls}>
+                      <button
+                        className={styles.quantityButton}
+                        onClick={() => handleQuantityChange(product, -1)}
+                        aria-label="Decrease quantity"
+                      >
+                        -
+                      </button>
+                      <span className={styles.quantity}>{cartQuantities[product.id]}</span>
+                      <button
+                        className={styles.quantityButton}
+                        onClick={() => handleQuantityChange(product, 1)}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      className={styles.cartButton}
+                      onClick={() => handleAddToCart(product)}
+                      aria-label={`Add ${product.name} to cart`}
+                    >
+                      <FaShoppingCart />
+                      Add
+                    </button>
+                  )}
               </div>
             </div>
+            </div>
           ))}
+
         </div>
       </div>
     </div>

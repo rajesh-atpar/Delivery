@@ -208,7 +208,11 @@ const Navbar = () => {
         <div className={styles.container}>
           {/* Logo Section */}
           <Link to="/" className={styles.logo}>
-            <span className={styles.logoText}>PPK</span>
+            <img 
+              src="/src/assets/Puscart logo.jpeg" 
+              alt="Puscart Logo" 
+              className={styles.logoImage}
+            />
           </Link>
 
           {/* Desktop Search Bar - Swapped position */}
@@ -234,9 +238,6 @@ const Navbar = () => {
             </li>
             <li>
               <Link to="/products" className={styles.desktopNavLink}>Products</Link>
-            </li>
-            <li>
-              <Link to="/categories" className={styles.desktopNavLink}>Categories</Link>
             </li>
             <li>
               <Link to="/about" className={styles.desktopNavLink}>About</Link>
@@ -286,7 +287,11 @@ const Navbar = () => {
         <div className={styles.menuContent}>
           <div className={styles.menuHeader}>
             <Link to="/" className={styles.menuLogo} onClick={handleLinkClick}>
-              <span className={styles.menuLogoText}>PPK</span>
+              <img 
+                src="/src/assets/Puscart logo.jpeg" 
+                alt="Puscart Logo" 
+                className={styles.menuLogoImage}
+              />
             </Link>
             <button 
               className={styles.menuCloseButton}

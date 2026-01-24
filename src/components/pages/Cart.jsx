@@ -141,7 +141,7 @@ const Cart = () => {
                       onClick={() => handleQuantityChange(item.id, -1)}
                       aria-label="Decrease quantity"
                     >
-                      <FaMinus />
+                      -
                     </button>
                     <span className={styles.quantity}>{item.quantity}</span>
                     <button 
@@ -149,17 +149,10 @@ const Cart = () => {
                       onClick={() => handleQuantityChange(item.id, 1)}
                       aria-label="Increase quantity"
                     >
-                      <FaPlus />
+                     +
                     </button>
                   </div>
                 </div>
-                <button 
-                  className={styles.removeButton} 
-                  onClick={() => handleRemoveItem(item.id)}
-                  aria-label={`Remove ${item.name}`}
-                >
-                  <FaTrash /> Remove
-                </button>
               </div>
             </div>
           ))}

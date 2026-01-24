@@ -170,27 +170,27 @@
   font-weight: 600;
 }
 
-/* Laptop View - Green Theme */
+/* Laptop View - Blue Theme */
 @media (min-width: 769px) {
   .loginPage {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   }
 
   .logoText {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
   }
 
   .input:focus {
-    border-color: #93bd57 !important;
-    box-shadow: 0 0 0 3px rgba(147, 189, 87, 0.1) !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
   }
 
   .loginButton {
-    background: linear-gradient(135deg, #7ba045 0%, #93bd57 100%) !important;
-    box-shadow: 0 4px 12px rgba(147, 189, 87, 0.3) !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
   }
 
   .loginButton:hover:not(:disabled) {
