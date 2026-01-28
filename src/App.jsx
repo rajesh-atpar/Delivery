@@ -1,11 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Home from "./components/pages/Home";
 import Products from "./components/pages/Products";
 import Orders from "./components/pages/Orders";
 import Cart from "./components/pages/Cart";
 import Profile from "./components/pages/Profile";
+import Login from "./components/pages/Login";
+import Register from "./components/pages/Register";
 import EditProfile from "./components/pages/EditProfile";
 import ChangePassword from "./components/pages/ChangePassword";
 import NotificationSettings from "./components/pages/NotificationSettings";
@@ -148,13 +153,39 @@ const AppContent = () => {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/categories" element={<Categories />} />
-        <Route path="/orders" element={<Orders />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/orders" element={
+          <ProtectedRoute>
+            <Orders />
+          </ProtectedRoute>
+        } />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/edit" element={<EditProfile />} />
-        <Route path="/profile/change-password" element={<ChangePassword />} />
-        <Route path="/profile/notifications" element={<NotificationSettings />} />
-        <Route path="/profile/privacy" element={<PrivacySettings />} />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/edit" element={
+          <ProtectedRoute>
+            <EditProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/change-password" element={
+          <ProtectedRoute>
+            <ChangePassword />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/notifications" element={
+          <ProtectedRoute>
+            <NotificationSettings />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/privacy" element={
+          <ProtectedRoute>
+            <PrivacySettings />
+          </ProtectedRoute>
+        } />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -170,11 +201,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Loading>
-      <Router>
-        <AppContent />
-    </Router>
-    </Loading>
+    <ErrorBoundary>
+      <Loading>
+        <AuthProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AuthProvider>
+      </Loading>
+    </ErrorBoundary>
   );
 }
 

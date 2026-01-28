@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { FaMapMarkerAlt, FaSearch, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt as FaMap, FaEdit, FaTimes } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import { FaMapMarkerAlt, FaSearch, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt as FaMap, FaEdit, FaTimes, FaShoppingBag } from "react-icons/fa";
 import styles from "./Navbar.module.css";
 
 const Navbar = () => {
@@ -9,6 +10,8 @@ const Navbar = () => {
   const [location, setLocation] = useState("Getting location...");
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const profilePanelRef = useRef(null);
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -26,6 +29,11 @@ const Navbar = () => {
   };
 
   const handleProfileToggle = () => {
+    if (!isAuthenticated) {
+      // Redirect to login if not authenticated
+      navigate("/login");
+      return;
+    }
     setIsProfileOpen(!isProfileOpen);
     if (!isProfileOpen) {
       document.body.style.overflow = 'hidden';
@@ -361,8 +369,12 @@ const Navbar = () => {
                 </button>
               </div>
               <div className={styles.profilePanelInfo}>
-                <h3 className={styles.profilePanelName}>John Doe</h3>
-                <p className={styles.profilePanelEmail}>john.doe@example.com</p>
+                <h3 className={styles.profilePanelName}>
+                  {user?.first_name && user?.last_name
+                    ? `${user.first_name} ${user.last_name}`
+                    : user?.name || user?.username || "User"}
+                </h3>
+                <p className={styles.profilePanelEmail}>{user?.email || "N/A"}</p>
               </div>
             </div>
 
@@ -375,48 +387,78 @@ const Navbar = () => {
                     <FaUser className={styles.profilePanelDetailIcon} />
                     <div className={styles.profilePanelDetailContent}>
                       <span className={styles.profilePanelDetailLabel}>Full Name</span>
-                      <span className={styles.profilePanelDetailValue}>John Doe</span>
+                      <span className={styles.profilePanelDetailValue}>
+                        {user?.first_name && user?.last_name
+                          ? `${user.first_name} ${user.last_name}`
+                          : user?.name || user?.username || "N/A"}
+                      </span>
                     </div>
                   </div>
                   <div className={styles.profilePanelDetailItem}>
                     <FaEnvelope className={styles.profilePanelDetailIcon} />
                     <div className={styles.profilePanelDetailContent}>
                       <span className={styles.profilePanelDetailLabel}>Email Address</span>
-                      <span className={styles.profilePanelDetailValue}>john.doe@example.com</span>
+                      <span className={styles.profilePanelDetailValue}>{user?.email || "N/A"}</span>
                     </div>
                   </div>
                   <div className={styles.profilePanelDetailItem}>
                     <FaPhone className={styles.profilePanelDetailIcon} />
                     <div className={styles.profilePanelDetailContent}>
                       <span className={styles.profilePanelDetailLabel}>Phone Number</span>
-                      <span className={styles.profilePanelDetailValue}>+1 (555) 123-4567</span>
+                      <span className={styles.profilePanelDetailValue}>
+                        {user?.phone || user?.phone_number || "N/A"}
+                      </span>
                     </div>
                   </div>
                   <div className={styles.profilePanelDetailItem}>
                     <FaMap className={styles.profilePanelDetailIcon} />
                     <div className={styles.profilePanelDetailContent}>
                       <span className={styles.profilePanelDetailLabel}>Address</span>
-                      <span className={styles.profilePanelDetailValue}>123 Main Street, New York, NY 10001</span>
+                      <span className={styles.profilePanelDetailValue}>
+                        {user?.address || "N/A"}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className={styles.profilePanelDetailSection}>
-                <h4 className={styles.profilePanelSectionTitle}>Account Settings</h4>
+                <h4 className={styles.profilePanelSectionTitle}>Quick Actions</h4>
                 <div className={styles.profilePanelDetailCard}>
-                  <div className={styles.profilePanelDetailItem}>
+                  <Link 
+                    to="/profile" 
+                    className={styles.profilePanelActionLink}
+                    onClick={handleProfileClose}
+                  >
+                    <FaUser className={styles.profilePanelDetailIcon} />
                     <div className={styles.profilePanelDetailContent}>
-                      <span className={styles.profilePanelDetailLabel}>Account Status</span>
-                      <span className={`${styles.profilePanelDetailValue} ${styles.profilePanelStatusActive}`}>Active</span>
+                      <span className={styles.profilePanelDetailLabel}>View Full Profile</span>
                     </div>
-                  </div>
-                  <div className={styles.profilePanelDetailItem}>
+                  </Link>
+                  <Link 
+                    to="/orders" 
+                    className={styles.profilePanelActionLink}
+                    onClick={handleProfileClose}
+                  >
+                    <FaShoppingBag className={styles.profilePanelDetailIcon} />
                     <div className={styles.profilePanelDetailContent}>
-                      <span className={styles.profilePanelDetailLabel}>Member Since</span>
-                      <span className={styles.profilePanelDetailValue}>January 2024</span>
+                      <span className={styles.profilePanelDetailLabel}>My Orders</span>
                     </div>
-                  </div>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      handleProfileClose();
+                      navigate("/");
+                    }}
+                    className={styles.profilePanelActionLink}
+                    style={{ border: "none", background: "none", width: "100%", textAlign: "left", cursor: "pointer", padding: 0 }}
+                  >
+                    <FaEdit className={styles.profilePanelDetailIcon} />
+                    <div className={styles.profilePanelDetailContent}>
+                      <span className={styles.profilePanelDetailLabel} style={{ color: "#dc2626" }}>Logout</span>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>

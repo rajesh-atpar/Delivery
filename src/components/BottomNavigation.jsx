@@ -1,9 +1,12 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { FaHome, FaReceipt, FaShoppingBag, FaUser } from "react-icons/fa";
 import styles from "./BottomNavigation.module.css";
 
 const BottomNavigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const navItems = [
     {
@@ -35,16 +38,25 @@ const BottomNavigation = () => {
     return location.pathname.startsWith(path);
   };
 
+  const handleProfileClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/login");
+    }
+  };
+
   return (
     <nav className={styles.bottomNav}>
       {navItems.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.path);
+        const isProfile = item.path === "/profile";
         
         return (
           <Link
             key={item.path}
             to={item.path}
+            onClick={isProfile ? handleProfileClick : undefined}
             className={`${styles.navItem} ${active ? styles.active : ""}`}
             aria-label={item.label}
           >

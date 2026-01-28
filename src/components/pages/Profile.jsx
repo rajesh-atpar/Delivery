@@ -1,147 +1,133 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaShoppingBag, FaHeart, FaCog } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";
+import { userAPI, ordersAPI } from "../../services/api";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaShoppingBag, FaHeart, FaCog, FaSpinner } from "react-icons/fa";
 import styles from "./Profile.module.css";
 
 const Profile = () => {
-  const [currentLocation, setCurrentLocation] = useState("Loading location...");
-  
-  const profileStats = [
-    { label: "Total Orders", value: "12", icon: FaShoppingBag },
-    { label: "Wishlist Items", value: "5", icon: FaHeart },
-    { label: "Account Status", value: "Active", icon: FaUser }
-  ];
+  const { user, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Get user's current location
+  // Fetch user profile and orders
   useEffect(() => {
-    const getCurrentLocation = () => {
-      if (!navigator.geolocation) {
-        setCurrentLocation("Location unavailable");
-        return;
-      }
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError("");
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          
-          try {
-            // Use BigDataCloud API (supports CORS, no API key needed)
-            const response = await fetch(
-              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-            );
-            
-            if (!response.ok) {
-              throw new Error('Failed to fetch location');
-            }
-            
-            const data = await response.json();
-            
-            if (data && data.locality) {
-              let locationText = data.locality;
-              
-              // Add state/province or country
-              if (data.principalSubdivision) {
-                locationText += `, ${data.principalSubdivision}`;
-              } else if (data.countryName) {
-                locationText += `, ${data.countryName}`;
-              }
-              
-              setCurrentLocation(locationText);
-            } else if (data && data.city) {
-              // Fallback to city if locality not available
-              let locationText = data.city;
-              if (data.principalSubdivisionCode) {
-                locationText += `, ${data.principalSubdivisionCode}`;
-              } else if (data.countryName) {
-                locationText += `, ${data.countryName}`;
-              }
-              setCurrentLocation(locationText);
-            } else if (data && data.countryName) {
-              setCurrentLocation(data.countryName);
-            } else {
-              // Last resort: show coordinates
-              setCurrentLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-            }
-          } catch (error) {
-            console.error("Error fetching location:", error);
-            // Try alternative geocoding service as fallback (using CORS proxy)
-            try {
-              const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1&zoom=18`)}`;
-              const altResponse = await fetch(proxyUrl);
-              const proxyData = await altResponse.json();
-              const data = JSON.parse(proxyData.contents);
-              
-              if (data && data.address) {
-                const address = data.address;
-                let locationText = "";
-                
-                if (address.city) {
-                  locationText = address.city;
-                } else if (address.town) {
-                  locationText = address.town;
-                } else if (address.village) {
-                  locationText = address.village;
-                } else if (address.suburb) {
-                  locationText = address.suburb;
-                } else if (address.county) {
-                  locationText = address.county;
-                }
-                
-                if (locationText && address.state) {
-                  locationText += `, ${address.state}`;
-                } else if (locationText && address.country) {
-                  locationText += `, ${address.country}`;
-                } else if (!locationText && address.state) {
-                  locationText = address.state;
-                } else if (!locationText && address.country) {
-                  locationText = address.country;
-                }
-                
-                if (locationText) {
-                  setCurrentLocation(locationText);
-                } else if (data.display_name) {
-                  const parts = data.display_name.split(',');
-                  setCurrentLocation(parts.length >= 2 ? `${parts[0].trim()}, ${parts[parts.length - 2].trim()}` : parts[0].trim());
-                } else {
-                  setCurrentLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-                }
-              } else {
-                setCurrentLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-              }
-            } catch (fallbackError) {
-              console.error("Fallback geocoding also failed:", fallbackError);
-              setCurrentLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-            }
-          }
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          let errorMessage = "Location unavailable";
-          
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = "Location denied";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location unavailable";
-              break;
-            case error.TIMEOUT:
-              errorMessage = "Location timeout";
-              break;
-          }
-          
-          setCurrentLocation(errorMessage);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 300000 // Cache for 5 minutes
+      try {
+        // Fetch user profile
+        const profileData = await userAPI.getProfile();
+        setUserData(profileData);
+
+        // Fetch user orders
+        const ordersData = await ordersAPI.getMyOrders();
+        setOrders(ordersData.orders || ordersData || []);
+      } catch (err) {
+        console.error("Error fetching profile data:", err);
+        setError(err.message || "Failed to load profile data");
+        // If unauthorized, logout and redirect
+        if (err.message.includes("Authentication failed")) {
+          logout();
         }
-      );
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    getCurrentLocation();
-  }, []);
+    if (user) {
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, logout]);
+
+  // Calculate stats from orders
+  const totalOrders = orders.length;
+  const deliveredOrders = orders.filter(order => order.status === "Delivered" || order.status === "delivered").length;
+  const pendingOrders = orders.filter(order => 
+    order.status === "Pending" || 
+    order.status === "pending" || 
+    order.status === "Processing" || 
+    order.status === "processing" ||
+    order.status === "In Transit" ||
+    order.status === "in_transit"
+  ).length;
+
+  const profileStats = [
+    { label: "Total Orders", value: totalOrders.toString(), icon: FaShoppingBag },
+    { label: "Delivered", value: deliveredOrders.toString(), icon: FaHeart },
+    { label: "Pending", value: pendingOrders.toString(), icon: FaUser }
+  ];
+
+  // Format order date
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", { 
+        year: "numeric", 
+        month: "short", 
+        day: "numeric" 
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Format order status
+  const getStatusColor = (status) => {
+    const statusLower = status?.toLowerCase() || "";
+    if (statusLower === "delivered") return "#10b981";
+    if (statusLower === "pending" || statusLower === "processing" || statusLower === "in transit" || statusLower === "in_transit") return "#f59e0b";
+    if (statusLower === "cancelled" || statusLower === "canceled") return "#ef4444";
+    return "#64748b";
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.profile}>
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+          flexDirection: "column",
+          gap: "1rem"
+        }}>
+          <FaSpinner style={{ fontSize: "2rem", color: "#3b82f6", animation: "spin 1s linear infinite" }} />
+          <p style={{ color: "#64748b" }}>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !userData) {
+    return (
+      <div className={styles.profile}>
+        <div style={{
+          padding: "2rem",
+          textAlign: "center"
+        }}>
+          <p style={{ color: "#dc2626", marginBottom: "1rem" }}>{error}</p>
+          <Link to="/login" style={{ color: "#3b82f6", textDecoration: "none" }}>Go to Login</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Use userData if available, otherwise fallback to user from context
+  const displayUser = userData || user;
+  const userName = displayUser?.first_name && displayUser?.last_name 
+    ? `${displayUser.first_name} ${displayUser.last_name}`
+    : displayUser?.name || displayUser?.username || "User";
+  const userEmail = displayUser?.email || "N/A";
+  const userPhone = displayUser?.phone || displayUser?.phone_number || "N/A";
+  const userAddress = displayUser?.address || "N/A";
+
 
   return (
     <div className={styles.profile}>
@@ -157,8 +143,8 @@ const Profile = () => {
             </button>
           </div>
           <div className={styles.profileInfo}>
-            <h1 className={styles.profileName}>John Doe</h1>
-            <p className={styles.profileEmail}>john.doe@example.com</p>
+            <h1 className={styles.profileName}>{userName}</h1>
+            <p className={styles.profileEmail}>{userEmail}</p>
           </div>
         </div>
       </section>
@@ -191,24 +177,97 @@ const Profile = () => {
             <FaEnvelope className={styles.detailIcon} />
             <div className={styles.detailContent}>
               <span className={styles.detailLabel}>Email Address</span>
-              <span className={styles.detailValue}>john.doe@example.com</span>
+              <span className={styles.detailValue}>{userEmail}</span>
             </div>
           </div>
           <div className={styles.detailItem}>
             <FaPhone className={styles.detailIcon} />
             <div className={styles.detailContent}>
               <span className={styles.detailLabel}>Phone Number</span>
-              <span className={styles.detailValue}>+1 (555) 123-4567</span>
+              <span className={styles.detailValue}>{userPhone}</span>
             </div>
           </div>
           <div className={styles.detailItem}>
             <FaMapMarkerAlt className={styles.detailIcon} />
             <div className={styles.detailContent}>
               <span className={styles.detailLabel}>Address</span>
-              <span className={styles.detailValue}>{currentLocation}</span>
+              <span className={styles.detailValue}>{userAddress}</span>
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Order History Section */}
+      <section className={styles.profileSection}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Order History</h2>
+        </div>
+        {orders.length > 0 ? (
+          <div className={styles.ordersList}>
+            {orders.map((order) => (
+              <div key={order.id || order.order_id} className={styles.orderCard}>
+                <div className={styles.orderHeader}>
+                  <div className={styles.orderInfo}>
+                    <h3 className={styles.orderNumber}>
+                      Order #{order.id || order.order_id || order.order_number || "N/A"}
+                    </h3>
+                    <p className={styles.orderDate}>
+                      {formatDate(order.created_at || order.date || order.order_date)}
+                    </p>
+                  </div>
+                  <div
+                    className={styles.statusBadge}
+                    style={{
+                      backgroundColor: `${getStatusColor(order.status)}15`,
+                      color: getStatusColor(order.status)
+                    }}
+                  >
+                    {order.status || "Pending"}
+                  </div>
+                </div>
+
+                {/* Order Items */}
+                <div className={styles.itemsPreview}>
+                  {order.items && order.items.length > 0 ? (
+                    order.items.slice(0, 3).map((item, index) => (
+                      <div key={index} className={styles.itemPreview}>
+                        <div className={styles.itemInfo}>
+                          <p className={styles.itemName}>
+                            {item.name || item.product_name || "Item"}
+                          </p>
+                          <p className={styles.itemQuantity}>
+                            Qty: {item.quantity || 1}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className={styles.noItems}>No items found</p>
+                  )}
+                  {order.items && order.items.length > 3 && (
+                    <p className={styles.moreItems}>
+                      +{order.items.length - 3} more items
+                    </p>
+                  )}
+                </div>
+
+                {/* Order Total */}
+                <div className={styles.orderTotal}>
+                  <span>Total Amount:</span>
+                  <span className={styles.totalPrice}>
+                    ₹{order.total || order.total_price || order.amount || "0.00"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyState}>
+            <FaShoppingBag className={styles.emptyIcon} />
+            <h3 className={styles.emptyTitle}>No Orders Yet</h3>
+            <p className={styles.emptyText}>Start shopping to see your orders here</p>
+          </div>
+        )}
       </section>
 
       {/* Account Settings Section */}
@@ -237,6 +296,14 @@ const Profile = () => {
             <span>My Orders</span>
             <FaShoppingBag />
           </Link>
+          <button
+            onClick={logout}
+            className={styles.settingItem}
+            style={{ cursor: "pointer", background: "none", border: "none", width: "100%", textAlign: "left" }}
+          >
+            <span>Logout</span>
+            <FaCog />
+          </button>
         </div>
       </section>
     </div>

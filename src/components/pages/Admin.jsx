@@ -234,7 +234,7 @@ const Admin = () => {
           </div>
         </div>
 
-        {/* Products Table */}
+        {/* Products List */}
         <div className={styles.productsSection}>
           <h2 className={styles.sectionTitle}>Products List</h2>
           {products.length === 0 ? (
@@ -243,61 +243,54 @@ const Admin = () => {
               <p>No products found. Add your first product to get started.</p>
             </div>
           ) : (
-            <div className={styles.tableWrapper}>
-              <table className={styles.productsTable}>
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product.id}>
-                      <td>
-                        <div className={styles.productImageCell}>
-                          <img 
-                            src={product.image} 
-                            alt={product.name}
-                            className={styles.productThumbnail}
-                            onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/60?text=No+Image";
-                            }}
-                          />
-                        </div>
-                      </td>
-                      <td className={styles.productNameCell}>{product.name}</td>
-                      <td>
-                        <span className={styles.categoryBadge}>{product.category}</span>
-                      </td>
-                      <td className={styles.priceCell}>{product.price}</td>
-                      <td>
-                        <div className={styles.actionButtons}>
-                          <button
-                            className={styles.editButton}
-                            onClick={() => handleEditProduct(product)}
-                            aria-label="Edit product"
-                            type="button"
-                          >
-                            <FaEdit size={18} />
-                          </button>
-                          <button
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteProduct(product.id)}
-                            aria-label="Delete product"
-                            type="button"
-                          >
-                            <FaTrash size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className={styles.productsList}>
+              {products.map((product) => (
+                <div key={product.id} className={styles.productRow}>
+                  {/* Product Image */}
+                  <div className={styles.productImageSmall}>
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/80?text=No+Image";
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div className={styles.productInfo}>
+                    <div className={styles.productHeader}>
+                      <h3 className={styles.productName}>{product.name}</h3>
+                      <span className={styles.categoryBadge}>{product.category}</span>
+                    </div>
+                    <div className={styles.productFooter}>
+                      <span className={styles.productPrice}>{product.price}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className={styles.productActions}>
+                    <button
+                      className={styles.editButton}
+                      onClick={() => handleEditProduct(product)}
+                      aria-label="Edit product"
+                      type="button"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDeleteProduct(product.id)}
+                      aria-label="Delete product"
+                      type="button"
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

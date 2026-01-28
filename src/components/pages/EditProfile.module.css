@@ -147,6 +147,26 @@
   gap: 1.25rem;
 }
 
+.successMessage {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  border: 1px solid #a7f3d0;
+}
+
+.errorMessage {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  border: 1px solid #fecaca;
+}
+
 .formGroup {
   display: flex;
   flex-direction: column;

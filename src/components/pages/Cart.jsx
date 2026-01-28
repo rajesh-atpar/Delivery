@@ -87,31 +87,12 @@ const Cart = () => {
             Shopping Cart
             <span className={styles.highlight}> Your Items</span>
           </h1>
-          <p className={styles.heroSubtitle}>
-            Review your selected items and proceed to checkout. 
-            Free delivery on orders over ₹500!
-          </p>
-          <div className={styles.heroButtons}>
-            <Link to="/products" className={styles.primaryButton}>
-              Continue Shopping
-            </Link>
-            <Link to="/orders" className={styles.secondaryButton}>
-              View Orders
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* Cart Items Section */}
       <section className={styles.cartSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Cart Items</h2>
-          <p className={styles.sectionSubtitle}>
-            {cartItems.length === 0 
-              ? "Your cart is empty" 
-              : `${cartItems.reduce((sum, item) => sum + item.quantity, 0)} item${cartItems.reduce((sum, item) => sum + item.quantity, 0) !== 1 ? 's' : ''} in your cart`}
-          </p>
-        </div>
+        
         {cartItems.length === 0 ? (
           <div className={styles.emptyCart}>
             <FaShoppingCart className={styles.emptyCartIcon} />
@@ -124,33 +105,105 @@ const Cart = () => {
           <div className={styles.cartItemsGrid}>
             {cartItems.map((item) => (
             <div key={item.id} className={styles.cartItemCard}>
-              <div className={styles.cartItemImage}>
-                <img 
-                  src={item.image} 
-                  alt={item.name}
-                  loading="lazy"
-                />
+              {/* Desktop Card Layout */}
+              <div className={styles.cartItemDesktop}>
+                <div className={styles.cartItemImage}>
+                  <img 
+                    src={item.image} 
+                    alt={item.name}
+                    loading="lazy"
+                  />
+                </div>
+                <div className={styles.cartItemInfo}>
+                  <div className={styles.cartItemInfoHeader}>
+                    <h3 className={styles.cartItemName}>{item.name}</h3>
+                    <button 
+                      className={styles.removeButton}
+                      onClick={() => handleRemoveItem(item.id)}
+                      aria-label="Remove item"
+                    >
+                      <FaTrash /> Remove
+                    </button>
+                  </div>
+                  <div className={styles.cartItemPriceRow}>
+                    <span className={styles.cartItemPrice}>{item.price}</span>
+                    <div className={styles.quantityControls}>
+                      <button 
+                        className={styles.quantityButton} 
+                        onClick={() => handleQuantityChange(item.id, -1)}
+                        aria-label="Decrease quantity"
+                      >
+                        <FaMinus />
+                      </button>
+                      <span className={styles.quantity}>{item.quantity}</span>
+                      <button 
+                        className={styles.quantityButton} 
+                        onClick={() => handleQuantityChange(item.id, 1)}
+                        aria-label="Increase quantity"
+                      >
+                        <FaPlus />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className={styles.cartItemInfo}>
-                <h3 className={styles.cartItemName}>{item.name}</h3>
-                <div className={styles.cartItemPriceRow}>
-                  <span className={styles.cartItemPrice}>{item.price}</span>
-                  <div className={styles.quantityControls}>
+
+              {/* Mobile Row Layout */}
+              <div className={styles.cartItemRow}>
+                {/* Small Product Image */}
+                <div className={styles.cartItemImageSmall}>
+                  <img 
+                    src={item.image} 
+                    alt={item.name}
+                    loading="lazy"
+                  />
+                </div>
+                
+                {/* Product Info Section */}
+                <div className={styles.cartItemContent}>
+                  {/* Name and Remove Button Row */}
+                  <div className={styles.cartItemHeader}>
+                    <h3 className={styles.cartItemName}>{item.name}</h3>
                     <button 
-                      className={styles.quantityButton} 
-                      onClick={() => handleQuantityChange(item.id, -1)}
-                      aria-label="Decrease quantity"
+                      className={styles.removeButtonSmall}
+                      onClick={() => handleRemoveItem(item.id)}
+                      aria-label="Remove item"
                     >
-                      -
+                      <FaTrash />
                     </button>
-                    <span className={styles.quantity}>{item.quantity}</span>
-                    <button 
-                      className={styles.quantityButton} 
-                      onClick={() => handleQuantityChange(item.id, 1)}
-                      aria-label="Increase quantity"
-                    >
-                     +
-                    </button>
+                  </div>
+                  
+                  {/* Price, Quantity, and Total Row */}
+                  <div className={styles.cartItemFooter}>
+                    <span className={styles.cartItemPrice}>{item.price}</span>
+                    <div className={styles.quantityControls}>
+                      <button 
+                        className={styles.quantityButton} 
+                        onClick={() => handleQuantityChange(item.id, -1)}
+                        aria-label="Decrease quantity"
+                      >
+                        <FaMinus />
+                      </button>
+                      <span className={styles.quantity}>{item.quantity}</span>
+                      <button 
+                        className={styles.quantityButton} 
+                        onClick={() => handleQuantityChange(item.id, 1)}
+                        aria-label="Increase quantity"
+                      >
+                        <FaPlus />
+                      </button>
+                    </div>
+                    <span className={styles.cartItemTotal}>
+                      ₹{(() => {
+                        try {
+                          const priceStr = item.price ? String(item.price).replace('₹', '').replace(',', '') : '0';
+                          const price = parseFloat(priceStr) || 0;
+                          return (price * (item.quantity || 1)).toFixed(0);
+                        } catch {
+                          return '0';
+                        }
+                      })()}
+                    </span>
                   </div>
                 </div>
               </div>

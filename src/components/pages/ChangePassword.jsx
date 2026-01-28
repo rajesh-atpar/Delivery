@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 import { FaLock, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import styles from "./ChangePassword.module.css";
 
@@ -19,6 +20,7 @@ const ChangePassword = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +73,7 @@ const ChangePassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSuccessMessage("");
     
     if (!validateForm()) {
       return;
@@ -78,12 +81,46 @@ const ChangePassword = () => {
 
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error('User not authenticated');
+
+      // Verify current password by attempting to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: formData.currentPassword,
+      });
+
+      if (signInError) {
+        setErrors({ currentPassword: "Current password is incorrect" });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Update password using Supabase
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: formData.newPassword
+      });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Success - show message and redirect
+      setSuccessMessage("Password changed successfully!");
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1500);
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setErrors({ 
+        submit: error.message || "Failed to change password. Please try again." 
+      });
+    } finally {
       setIsSubmitting(false);
-      alert("Password changed successfully!");
-      navigate("/profile");
-    }, 1000);
+    }
   };
 
   return (
@@ -213,12 +250,27 @@ const ChangePassword = () => {
             )}
           </div>
 
+          {/* Success Message */}
+          {successMessage && (
+            <div className={styles.successMessage}>
+              {successMessage}
+            </div>
+          )}
+
+          {/* Error Message */}
+          {errors.submit && (
+            <div className={styles.errorMessage}>
+              {errors.submit}
+            </div>
+          )}
+
           {/* Submit Button */}
           <div className={styles.buttonGroup}>
             <button
               type="button"
               onClick={() => navigate("/profile")}
               className={styles.cancelButton}
+              disabled={isSubmitting}
             >
               Cancel
             </button>
