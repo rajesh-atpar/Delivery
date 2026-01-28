@@ -67,4 +67,68 @@ export const upsertUserProfile = async (userId, profileData) => {
   return data;
 };
 
+// Products helper functions
+export const getProducts = async () => {
+  // Check if Supabase is configured
+  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    throw new Error('Supabase is not configured. Please set up your .env file.');
+  }
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) throw error;
+  return data;
+};
+
+export const createProduct = async (productData) => {
+  // Check if Supabase is configured
+  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    throw new Error('Supabase is not configured. Please set up your .env file.');
+  }
+
+  const { data, error } = await supabase
+    .from('products')
+    .insert(productData)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data;
+};
+
+export const updateProduct = async (productId, productData) => {
+  // Check if Supabase is configured
+  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    throw new Error('Supabase is not configured. Please set up your .env file.');
+  }
+
+  const { data, error } = await supabase
+    .from('products')
+    .update(productData)
+    .eq('id', productId)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data;
+};
+
+export const deleteProduct = async (productId) => {
+  // Check if Supabase is configured
+  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    throw new Error('Supabase is not configured. Please set up your .env file.');
+  }
+
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', productId);
+  
+  if (error) throw error;
+  return { success: true };
+};
+
 export default supabase;

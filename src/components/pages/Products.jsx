@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
+import { FaShoppingCart, FaPlus, FaMinus, FaSpinner } from "react-icons/fa";
+import { productsAPI } from "../../services/api";
 import styles from "./Products.module.css";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [cartQuantities, setCartQuantities] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Default products (same as Admin page)
   const defaultProducts = [
@@ -94,56 +97,61 @@ const Products = () => {
     }
   ];
 
-  // Load products from localStorage (shared with Admin page)
+  // Load products from Supabase database
   useEffect(() => {
-    const loadProducts = () => {
-      const savedProducts = localStorage.getItem("adminProducts");
-      if (savedProducts) {
-        try {
-          const parsedProducts = JSON.parse(savedProducts);
-          setProducts(parsedProducts);
-        } catch (error) {
-          console.error("Error parsing products:", error);
-          setProducts(defaultProducts);
-        }
-      } else {
-        // Initialize with default products if none exist
-        setProducts(defaultProducts);
-        localStorage.setItem("adminProducts", JSON.stringify(defaultProducts));
-      }
-    };
-
-    loadProducts();
-
-    // Listen for storage changes (when admin updates products)
-    const handleStorageChange = (e) => {
-      if (e.key === "adminProducts") {
-        if (e.newValue) {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError("");
+      try {
+        // Fetch products from Supabase
+        const productsData = await productsAPI.getAllProducts();
+        
+        // Format products for display (convert price to string format if needed)
+        const formattedProducts = productsData.map(product => ({
+          ...product,
+          price: typeof product.price === 'number' 
+            ? `₹${product.price.toFixed(0)}` 
+            : product.price || '₹0'
+        }));
+        
+        setProducts(formattedProducts);
+        
+        // Also update localStorage for backward compatibility
+        localStorage.setItem("adminProducts", JSON.stringify(formattedProducts));
+      } catch (err) {
+        console.error("Error fetching products from database:", err);
+        setError("Failed to load products. Showing cached products.");
+        
+        // Fallback to localStorage if Supabase fails
+        const savedProducts = localStorage.getItem("adminProducts");
+        if (savedProducts) {
           try {
-            const parsedProducts = JSON.parse(e.newValue);
+            const parsedProducts = JSON.parse(savedProducts);
             setProducts(parsedProducts);
-          } catch (error) {
-            console.error("Error parsing products:", error);
+          } catch (parseError) {
+            console.error("Error parsing cached products:", parseError);
+            setProducts(defaultProducts);
           }
         } else {
           setProducts(defaultProducts);
         }
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    // Listen for custom event (for same-tab updates)
-    const handleCustomStorageChange = () => {
-      loadProducts();
+    fetchProducts();
+
+    // Listen for custom event (when admin updates products)
+    const handleProductsUpdated = () => {
+      fetchProducts();
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("productsUpdated", handleCustomStorageChange);
+    window.addEventListener("productsUpdated", handleProductsUpdated);
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("productsUpdated", handleCustomStorageChange);
+      window.removeEventListener("productsUpdated", handleProductsUpdated);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load cart items to check which products are already in cart
@@ -235,8 +243,18 @@ const Products = () => {
           <p className={styles.subtitle}>Browse our wide selection of fresh and quality products</p>
         </div>
 
-        <div className={styles.productsGrid}>
-          {products.map((product) => (
+        {isLoading ? (
+          <div className={styles.loadingState}>
+            <FaSpinner className={styles.spinner} />
+            <p>Loading products...</p>
+          </div>
+        ) : error && products.length === 0 ? (
+          <div className={styles.errorState}>
+            <p>{error}</p>
+          </div>
+        ) : (
+          <div className={styles.productsGrid}>
+            {products.map((product) => (
             <div key={product.id} className={styles.productCard}>
               <div className={styles.productImageWrapper}>
                 <div className={styles.productImage}>
@@ -283,9 +301,9 @@ const Products = () => {
               </div>
             </div>
             </div>
-          ))}
-
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

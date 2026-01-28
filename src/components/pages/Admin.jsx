@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave, FaImage, FaSignOutAlt } from "react-icons/fa";
+import { productsAPI } from "../../services/api";
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave, FaImage, FaSignOutAlt, FaSpinner } from "react-icons/fa";
 import styles from "./Admin.module.css";
 
 const Admin = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     price: "",
     image: "",
-    category: "Fruits"
+    category: "Fruits",
+    description: ""
   });
 
   // Check authentication on component mount
@@ -35,50 +40,41 @@ const Admin = () => {
     }
   }, [navigate]);
 
-  // Load products from localStorage on mount
+  // Load products from Supabase on mount
   useEffect(() => {
-    const savedProducts = localStorage.getItem("adminProducts");
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    } else {
-      // Initialize with default products
-      const defaultProducts = [
-        {
-          id: 1,
-          name: "Fresh Organic Apples",
-          price: "₹99",
-          image: "https://plus.unsplash.com/premium_photo-1667049292983-d2524dd0ef08?q=80&w=1149&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          category: "Fruits"
-        },
-        {
-          id: 2,
-          name: "Fresh Tomatoes",
-          price: "₹69",
-          image: "https://plus.unsplash.com/premium_photo-1724849418331-97502da20f86?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTAzfHxmcmVzaCUyMHRvbWF0b3xlbnwwfHwwfHx8MA%3D%3D",
-          category: "Vegetables"
-        },
-        {
-          id: 3,
-          name: "Premium Rice 5kg",
-          price: "₹259",
-          image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
-          category: "Grains"
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const productsData = await productsAPI.getAllProducts();
+        setProducts(productsData);
+        // Also update localStorage for backward compatibility with Products page
+        localStorage.setItem("adminProducts", JSON.stringify(productsData));
+        window.dispatchEvent(new Event("productsUpdated"));
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError(err.message || "Failed to load products");
+        // Fallback to localStorage if Supabase fails
+        const savedProducts = localStorage.getItem("adminProducts");
+        if (savedProducts) {
+          try {
+            setProducts(JSON.parse(savedProducts));
+          } catch {
+            setProducts([]);
+          }
         }
-      ];
-      setProducts(defaultProducts);
-      localStorage.setItem("adminProducts", JSON.stringify(defaultProducts));
-    }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  // Save products to localStorage whenever products change
-  // Also dispatch event to update Products page in real-time
+  // Debug: Log when isFormOpen changes
   useEffect(() => {
-    if (products.length > 0) {
-      localStorage.setItem("adminProducts", JSON.stringify(products));
-      // Dispatch custom event to notify Products page of changes
-      window.dispatchEvent(new Event("productsUpdated"));
-    }
-  }, [products]);
+    console.log("isFormOpen state changed:", isFormOpen);
+  }, [isFormOpen]);
 
   const categories = [
     "Fruits",
@@ -100,76 +96,125 @@ const Admin = () => {
   };
 
   const handleAddProduct = () => {
+    console.log("Add Product button clicked");
     setEditingProduct(null);
     setFormData({
       name: "",
       price: "",
       image: "",
-      category: "Fruits"
+      category: "Fruits",
+      description: ""
     });
     setIsFormOpen(true);
+    console.log("isFormOpen set to true");
   };
 
   const handleEditProduct = (product) => {
     setEditingProduct(product);
+    // Format price for form input - handle both number and string
+    let formattedPrice = '';
+    if (typeof product.price === 'number') {
+      formattedPrice = `₹${product.price.toFixed(0)}`;
+    } else if (typeof product.price === 'string') {
+      formattedPrice = product.price;
+    } else {
+      formattedPrice = '';
+    }
+    
     setFormData({
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      category: product.category
+      name: product.name || '',
+      price: formattedPrice,
+      image: product.image || '',
+      category: product.category || 'Fruits',
+      description: product.description || ""
     });
     setIsFormOpen(true);
   };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      const updatedProducts = products.filter(product => product.id !== id);
-      setProducts(updatedProducts);
+      try {
+        await productsAPI.deleteProduct(id);
+        // Remove from local state
+        const updatedProducts = products.filter(product => product.id !== id);
+        setProducts(updatedProducts);
+        // Update localStorage
+        localStorage.setItem("adminProducts", JSON.stringify(updatedProducts));
+        window.dispatchEvent(new Event("productsUpdated"));
+      } catch (err) {
+        console.error("Error deleting product:", err);
+        alert("Failed to delete product: " + (err.message || "Unknown error"));
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     
     if (!formData.name || !formData.price || !formData.image) {
-      alert("Please fill in all fields");
+      setError("Please fill in all required fields");
       return;
     }
 
-    if (editingProduct) {
-      // Update existing product
-      const updatedProducts = products.map(product =>
-        product.id === editingProduct.id
-          ? { ...product, ...formData }
-          : product
-      );
-      setProducts(updatedProducts);
-    } else {
-      // Add new product
-      const newProduct = {
-        id: Date.now(),
-        ...formData
-      };
-      setProducts([...products, newProduct]);
+    try {
+      if (editingProduct) {
+        // Update existing product in Supabase
+        const updatedProduct = await productsAPI.updateProduct(editingProduct.id, {
+          name: formData.name,
+          price: formData.price,
+          image: formData.image,
+          category: formData.category,
+          description: formData.description || null,
+        });
+        
+        // Update local state
+        const updatedProducts = products.map(product =>
+          product.id === editingProduct.id ? updatedProduct : product
+        );
+        setProducts(updatedProducts);
+        localStorage.setItem("adminProducts", JSON.stringify(updatedProducts));
+      } else {
+        // Create new product in Supabase
+        const newProduct = await productsAPI.createProduct({
+          name: formData.name,
+          price: formData.price,
+          image: formData.image,
+          category: formData.category,
+          description: formData.description || null,
+        });
+        
+        // Add to local state
+        const updatedProducts = [newProduct, ...products];
+        setProducts(updatedProducts);
+        localStorage.setItem("adminProducts", JSON.stringify(updatedProducts));
+      }
+      
+      window.dispatchEvent(new Event("productsUpdated"));
+      setIsFormOpen(false);
+      setFormData({
+        name: "",
+        price: "",
+        image: "",
+        category: "Fruits",
+        description: ""
+      });
+      setEditingProduct(null);
+    } catch (err) {
+      console.error("Error saving product:", err);
+      setError(err.message || "Failed to save product. Please try again.");
     }
-
-    setIsFormOpen(false);
-    setFormData({
-      name: "",
-      price: "",
-      image: "",
-      category: "Fruits"
-    });
-    setEditingProduct(null);
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
+    setError("");
     setFormData({
       name: "",
       price: "",
       image: "",
-      category: "Fruits"
+      category: "Fruits",
+      description: ""
     });
     setEditingProduct(null);
   };
@@ -226,9 +271,15 @@ const Admin = () => {
           <div className={styles.statCard}>
             <div className={styles.statValue}>
               {products.reduce((acc, p) => {
-                const price = parseInt(p.price.replace('₹', '')) || 0;
+                // Handle both number (from Supabase) and string (from localStorage) prices
+                let price = 0;
+                if (typeof p.price === 'number') {
+                  price = p.price;
+                } else if (typeof p.price === 'string') {
+                  price = parseFloat(p.price.replace(/₹|,/g, '')) || 0;
+                }
                 return acc + price;
-              }, 0)}
+              }, 0).toFixed(0)}
             </div>
             <div className={styles.statLabel}>Total Value (₹)</div>
           </div>
@@ -237,66 +288,84 @@ const Admin = () => {
         {/* Products List */}
         <div className={styles.productsSection}>
           <h2 className={styles.sectionTitle}>Products List</h2>
-          {products.length === 0 ? (
+          
+          {isLoading ? (
+            <div className={styles.loadingState}>
+              <FaSpinner className={styles.spinner} />
+              <p>Loading products...</p>
+            </div>
+          ) : error && products.length === 0 ? (
+            <div className={styles.emptyState}>
+              <FaImage className={styles.emptyIcon} />
+              <p>{error}</p>
+            </div>
+          ) : products.length === 0 ? (
             <div className={styles.emptyState}>
               <FaImage className={styles.emptyIcon} />
               <p>No products found. Add your first product to get started.</p>
             </div>
           ) : (
             <div className={styles.productsList}>
-              {products.map((product) => (
-                <div key={product.id} className={styles.productRow}>
-                  {/* Product Image */}
-                  <div className={styles.productImageSmall}>
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/80?text=No+Image";
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Product Info */}
-                  <div className={styles.productInfo}>
-                    <div className={styles.productHeader}>
-                      <h3 className={styles.productName}>{product.name}</h3>
-                      <span className={styles.categoryBadge}>{product.category}</span>
+              {products.map((product) => {
+                // Format price for display
+                const displayPrice = product.price 
+                  ? (typeof product.price === 'number' ? `₹${product.price.toFixed(0)}` : product.price)
+                  : '₹0';
+                
+                return (
+                  <div key={product.id} className={styles.productRow}>
+                    {/* Product Image */}
+                    <div className={styles.productImageSmall}>
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/80?text=No+Image";
+                        }}
+                      />
                     </div>
-                    <div className={styles.productFooter}>
-                      <span className={styles.productPrice}>{product.price}</span>
+                    
+                    {/* Product Info */}
+                    <div className={styles.productInfo}>
+                      <div className={styles.productHeader}>
+                        <h3 className={styles.productName}>{product.name}</h3>
+                        <span className={styles.categoryBadge}>{product.category}</span>
+                      </div>
+                      <div className={styles.productFooter}>
+                        <span className={styles.productPrice}>{displayPrice}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className={styles.productActions}>
+                      <button
+                        className={styles.editButton}
+                        onClick={() => handleEditProduct(product)}
+                        aria-label="Edit product"
+                        type="button"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className={styles.deleteButton}
+                        onClick={() => handleDeleteProduct(product.id)}
+                        aria-label="Delete product"
+                        type="button"
+                        title="Delete"
+                      >
+                        <FaTrash />
+                      </button>
                     </div>
                   </div>
-                  
-                  {/* Action Buttons */}
-                  <div className={styles.productActions}>
-                    <button
-                      className={styles.editButton}
-                      onClick={() => handleEditProduct(product)}
-                      aria-label="Edit product"
-                      type="button"
-                      title="Edit"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeleteProduct(product.id)}
-                      aria-label="Delete product"
-                      type="button"
-                      title="Delete"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
         {/* Add/Edit Product Form Modal */}
-        {isFormOpen && (
+        {isFormOpen && createPortal(
           <div className={styles.modalOverlay} onClick={handleCloseForm}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
               <div className={styles.modalHeader}>
@@ -313,6 +382,12 @@ const Admin = () => {
               </div>
 
               <form onSubmit={handleSubmit} className={styles.productForm}>
+                {error && (
+                  <div className={styles.errorMessage}>
+                    {error}
+                  </div>
+                )}
+
                 <div className={styles.formGroup}>
                   <label htmlFor="name" className={styles.label}>
                     Product Name *
@@ -390,6 +465,21 @@ const Admin = () => {
                   )}
                 </div>
 
+                <div className={styles.formGroup}>
+                  <label htmlFor="description" className={styles.label}>
+                    Description (Optional)
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className={styles.textarea}
+                    placeholder="Enter product description"
+                    rows="3"
+                  />
+                </div>
+
                 <div className={styles.formActions}>
                   <button
                     type="button"
@@ -405,7 +495,8 @@ const Admin = () => {
                 </div>
               </form>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </div>

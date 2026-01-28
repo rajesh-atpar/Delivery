@@ -307,9 +307,108 @@ export const cartAPI = {
   },
 };
 
+// Products API using Supabase
+export const productsAPI = {
+  getAllProducts: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // For admin/authenticated users, get all products
+    // For public, only get active products
+    const query = supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!user) {
+      // Public users only see active products
+      query.eq('is_active', true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  getProductById: async (productId) => {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  createProduct: async (productData) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to create products');
+
+    // Parse price - remove ₹ symbol if present
+    const priceStr = String(productData.price || '0').replace('₹', '').replace(',', '');
+    const price = parseFloat(priceStr) || 0;
+
+    const { data, error } = await supabase
+      .from('products')
+      .insert({
+        name: productData.name,
+        price: price,
+        image: productData.image,
+        category: productData.category,
+        description: productData.description || null,
+        stock_quantity: productData.stock_quantity || 0,
+        is_active: productData.is_active !== undefined ? productData.is_active : true,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  updateProduct: async (productId, productData) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to update products');
+
+    // Parse price if provided
+    const updateData = { ...productData };
+    if (updateData.price) {
+      const priceStr = String(updateData.price).replace('₹', '').replace(',', '');
+      updateData.price = parseFloat(priceStr) || 0;
+    }
+
+    const { data, error } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('id', productId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  deleteProduct: async (productId) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to delete products');
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', productId);
+
+    if (error) throw error;
+    return { success: true };
+  },
+};
+
 export default {
   authAPI,
   userAPI,
   ordersAPI,
   cartAPI,
+  productsAPI,
 };
