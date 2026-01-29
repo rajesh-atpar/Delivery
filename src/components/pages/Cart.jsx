@@ -6,6 +6,49 @@ import styles from "./Cart.module.css";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
 
+  // Categories that are sold by weight (per kg)
+  const isWeightBased = (category) => {
+    return ["Fruits", "Vegetables"].includes(category);
+  };
+
+  // Get increment value based on category (0.5 for weight-based, 1 for others)
+  const getIncrement = (category) => {
+    return isWeightBased(category) ? 0.5 : 1;
+  };
+
+  // Format quantity display (with "kg" for weight-based items)
+  const formatQuantity = (item) => {
+    if (isWeightBased(item.category)) {
+      return `${item.quantity} kg`;
+    }
+    return item.quantity;
+  };
+
+  // Format price display (with "/kg" for weight-based items)
+  const formatPrice = (item) => {
+    const price = item.price || '₹0';
+    if (isWeightBased(item.category)) {
+      return `${price}/kg`;
+    }
+    return price;
+  };
+
+  // Merge duplicate cart entries by id (same product = one row, summed quantity)
+  const mergeCartByProductId = (items) => {
+    const byId = new Map();
+    for (const item of items) {
+      const id = item.id;
+      const key = String(id);
+      if (byId.has(key)) {
+        const existing = byId.get(key);
+        existing.quantity = (existing.quantity || 1) + (item.quantity || 1);
+      } else {
+        byId.set(key, { ...item, id, quantity: item.quantity || 1 });
+      }
+    }
+    return Array.from(byId.values());
+  };
+
   // Load cart items from localStorage
   useEffect(() => {
     const loadCartItems = () => {
@@ -13,7 +56,11 @@ const Cart = () => {
       if (savedCartItems) {
         try {
           const parsedItems = JSON.parse(savedCartItems);
-          setCartItems(parsedItems);
+          const merged = mergeCartByProductId(parsedItems);
+          setCartItems(merged);
+          if (merged.length !== parsedItems.length) {
+            localStorage.setItem("cartItems", JSON.stringify(merged));
+          }
         } catch (error) {
           console.error("Error parsing cart items:", error);
           setCartItems([]);
@@ -45,15 +92,22 @@ const Cart = () => {
     };
   }, []);
 
-  const handleQuantityChange = (itemId, change) => {
-    const updatedItems = cartItems.map(item => {
-      if (item.id === itemId) {
-        const newQuantity = item.quantity + change;
-        if (newQuantity < 1) return null; // Remove if quantity becomes 0
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    }).filter(item => item !== null); // Remove null items
+  const handleQuantityChange = (itemId, direction) => {
+    const idStr = String(itemId);
+    const updatedItems = cartItems
+      .map((item) => {
+        if (String(item.id) === idStr) {
+          const increment = getIncrement(item.category);
+          const change = direction > 0 ? increment : -increment;
+          const newQuantity = item.quantity + change;
+          const minQty = isWeightBased(item.category) ? 0.5 : 1;
+          
+          if (newQuantity < minQty) return null; // Remove if below minimum
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      })
+      .filter((item) => item !== null);
 
     setCartItems(updatedItems);
     localStorage.setItem("cartItems", JSON.stringify(updatedItems));
@@ -61,7 +115,8 @@ const Cart = () => {
   };
 
   const handleRemoveItem = (itemId) => {
-    const updatedItems = cartItems.filter(item => item.id !== itemId);
+    const idStr = String(itemId);
+    const updatedItems = cartItems.filter((item) => String(item.id) !== idStr);
     setCartItems(updatedItems);
     localStorage.setItem("cartItems", JSON.stringify(updatedItems));
     window.dispatchEvent(new Event("cartUpdated"));
@@ -69,7 +124,9 @@ const Cart = () => {
 
   const total = cartItems.reduce((sum, item) => {
     try {
-      const priceStr = item.price ? String(item.price).replace('₹', '').replace(',', '') : '0';
+      const priceStr = item.price 
+        ? String(item.price).replace('₹', '').replace(',', '').replace('/kg', '') 
+        : '0';
       const price = parseFloat(priceStr) || 0;
       return sum + price * (item.quantity || 1);
     } catch (error) {
@@ -126,7 +183,7 @@ const Cart = () => {
                     </button>
                   </div>
                   <div className={styles.cartItemPriceRow}>
-                    <span className={styles.cartItemPrice}>{item.price}</span>
+                    <span className={styles.cartItemPrice}>{formatPrice(item)}</span>
                     <div className={styles.quantityControls}>
                       <button 
                         className={styles.quantityButton} 
@@ -135,7 +192,7 @@ const Cart = () => {
                       >
                         <FaMinus />
                       </button>
-                      <span className={styles.quantity}>{item.quantity}</span>
+                      <span className={styles.quantity}>{formatQuantity(item)}</span>
                       <button 
                         className={styles.quantityButton} 
                         onClick={() => handleQuantityChange(item.id, 1)}
@@ -175,7 +232,7 @@ const Cart = () => {
                   
                   {/* Price, Quantity, and Total Row */}
                   <div className={styles.cartItemFooter}>
-                    <span className={styles.cartItemPrice}>{item.price}</span>
+                    <span className={styles.cartItemPrice}>{formatPrice(item)}</span>
                     <div className={styles.quantityControls}>
                       <button 
                         className={styles.quantityButton} 
@@ -184,7 +241,7 @@ const Cart = () => {
                       >
                         <FaMinus />
                       </button>
-                      <span className={styles.quantity}>{item.quantity}</span>
+                      <span className={styles.quantity}>{formatQuantity(item)}</span>
                       <button 
                         className={styles.quantityButton} 
                         onClick={() => handleQuantityChange(item.id, 1)}
@@ -196,7 +253,7 @@ const Cart = () => {
                     <span className={styles.cartItemTotal}>
                       ₹{(() => {
                         try {
-                          const priceStr = item.price ? String(item.price).replace('₹', '').replace(',', '') : '0';
+                          const priceStr = item.price ? String(item.price).replace('₹', '').replace(',', '').replace('/kg', '') : '0';
                           const price = parseFloat(priceStr) || 0;
                           return (price * (item.quantity || 1)).toFixed(0);
                         } catch {

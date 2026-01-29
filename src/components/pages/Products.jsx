@@ -184,38 +184,59 @@ const Products = () => {
     };
   }, []);
 
+  // Categories that are sold by weight (per kg)
+  const isWeightBased = (category) => {
+    return ["Fruits", "Vegetables"].includes(category);
+  };
+
+  // Get increment value based on category (0.5 for weight-based, 1 for others)
+  const getIncrement = (category) => {
+    return isWeightBased(category) ? 0.5 : 1;
+  };
+
   const handleAddToCart = (product) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
-    
+    const productId = product.id;
+    const increment = getIncrement(product.category);
+    const existingItemIndex = cartItems.findIndex(
+      (item) => String(item.id) === String(productId)
+    );
+
     if (existingItemIndex >= 0) {
-      cartItems[existingItemIndex].quantity += 1;
+      cartItems[existingItemIndex].quantity += increment;
     } else {
       cartItems.push({
-        id: product.id,
+        id: productId,
         name: product.name,
         price: product.price,
         image: product.image,
         category: product.category,
-        quantity: 1
+        quantity: increment // Start with 0.5 for weight-based, 1 for others
       });
     }
-    
+
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    setCartQuantities(prev => ({
+    setCartQuantities((prev) => ({
       ...prev,
-      [product.id]: (prev[product.id] || 0) + 1
+      [productId]: (prev[productId] || 0) + increment
     }));
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  const handleQuantityChange = (product, change) => {
+  const handleQuantityChange = (product, direction) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
+    const existingItemIndex = cartItems.findIndex(
+      (item) => String(item.id) === String(product.id)
+    );
     
     if (existingItemIndex >= 0) {
+      const increment = getIncrement(product.category);
+      const change = direction > 0 ? increment : -increment;
       const newQuantity = cartItems[existingItemIndex].quantity + change;
-      if (newQuantity <= 0) {
+      const minQty = isWeightBased(product.category) ? 0.5 : 1;
+      
+      if (newQuantity < minQty) {
+        // Remove item if below minimum
         cartItems.splice(existingItemIndex, 1);
         setCartQuantities(prev => {
           const updated = { ...prev };
@@ -269,7 +290,9 @@ const Products = () => {
                 <span className={styles.productCategory}>{product.category}</span>
                 <h3 className={styles.productName}>{product.name}</h3>
                 <div className={styles.productFooter}>
-                  <span className={styles.productPrice}>{product.price}</span>
+                  <span className={styles.productPrice}>
+                    {product.price}{isWeightBased(product.category) ? '/kg' : ''}
+                  </span>
                   {cartQuantities[product.id] ? (
                     <div className={styles.quantityControls}>
                       <button
@@ -279,7 +302,11 @@ const Products = () => {
                       >
                         -
                       </button>
-                      <span className={styles.quantity}>{cartQuantities[product.id]}</span>
+                      <span className={styles.quantity}>
+                        {isWeightBased(product.category) 
+                          ? `${cartQuantities[product.id]} kg` 
+                          : cartQuantities[product.id]}
+                      </span>
                       <button
                         className={styles.quantityButton}
                         onClick={() => handleQuantityChange(product, 1)}

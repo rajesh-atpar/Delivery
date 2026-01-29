@@ -1,0 +1,243 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 180px; /* space for fixed footer + bottom nav on mobile */
+  background: #fafafa;
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 769px) {
+  .page {
+    padding-top: 5rem;
+    padding-bottom: 120px;
+  }
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* Progress: Cart → Address → Payment */
+.progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.stepDot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.stepActive .stepDot {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.stepActive .stepLabel {
+  color: #1e40af;
+}
+
+.stepLine {
+  width: 28px;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 2px;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 769px) {
+  .stepLine {
+    width: 48px;
+  }
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.9375rem;
+  color: #64748b;
+  margin: 0 0 1.75rem 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a202c;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #9ca3af;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.inputError {
+  border-color: #f87171;
+}
+
+.inputError:focus {
+  border-color: #f87171;
+  box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.errorText {
+  font-size: 0.8125rem;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.spacer {
+  height: 1rem;
+}
+
+/* Fixed bottom bar - above bottom nav on mobile so Continue is visible */
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1rem 1.25rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+  z-index: 1001; /* above BottomNavigation (z-index 1000) */
+}
+
+/* On mobile: sit above the bottom nav so button is not hidden */
+@media (max-width: 768px) {
+  .footer {
+    bottom: calc(60px + env(safe-area-inset-bottom, 0)); /* above bottom nav height */
+  }
+}
+
+@media (min-width: 769px) {
+  .footer {
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 16px 16px 0 0;
+    margin: 0;
+    bottom: 0; /* reset for desktop where there is no bottom nav */
+  }
+}
+
+.continueButton {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+
+.continueButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.continueButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.continueButton:disabled {
+  opacity: 0.9;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

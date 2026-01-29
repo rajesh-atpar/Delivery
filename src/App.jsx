@@ -8,6 +8,8 @@ import Home from "./components/pages/Home";
 import Products from "./components/pages/Products";
 import Orders from "./components/pages/Orders";
 import Cart from "./components/pages/Cart";
+import CheckoutAddress from "./components/pages/CheckoutAddress";
+import Payment from "./components/pages/Payment";
 import Profile from "./components/pages/Profile";
 import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
@@ -161,6 +163,8 @@ const AppContent = () => {
           </ProtectedRoute>
         } />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<CheckoutAddress />} />
+        <Route path="/checkout/payment" element={<Payment />} />
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
