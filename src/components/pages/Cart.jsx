@@ -8,7 +8,7 @@ const Cart = () => {
 
   // Categories that are sold by weight (per kg)
   const isWeightBased = (category) => {
-    return ["Fruits", "Vegetables"].includes(category);
+    return ["Fruits", "Vegetables, Root Vegetables & Greens"].includes(category);
   };
 
   // Get increment value based on category (0.5 for weight-based, 1 for others)

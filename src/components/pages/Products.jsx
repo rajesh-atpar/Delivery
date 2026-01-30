@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FaShoppingCart, FaPlus, FaMinus, FaSpinner } from "react-icons/fa";
 import { productsAPI } from "../../services/api";
+import { cache } from "../../utils/cache";
 import styles from "./Products.module.css";
 
 const Products = () => {
+  const [searchParams] = useSearchParams();
+  const selectedCategory = searchParams.get("category");
+  const searchQuery = searchParams.get("search");
   const [products, setProducts] = useState([]);
   const [cartQuantities, setCartQuantities] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -23,14 +28,14 @@ const Products = () => {
       name: "Fresh Tomatoes",
       price: "₹69",
       image: "https://plus.unsplash.com/premium_photo-1724849418331-97502da20f86?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTAzfHxmcmVzaCUyMHRvbWF0b3xlbnwwfHwwfHx8MA%3D%3D",
-      category: "Vegetables"
+      category: "Vegetables, Root Vegetables & Greens"
     },
     {
       id: 3,
       name: "Premium Rice 5kg",
       price: "₹259",
       image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
-      category: "Grains"
+      category: "Cereal Grains & Pulses"
     },
     {
       id: 4,
@@ -44,14 +49,14 @@ const Products = () => {
       name: "Fresh Carrots",
       price: "₹49",
       image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop",
-      category: "Vegetables"
+      category: "Vegetables, Root Vegetables & Greens"
     },
     {
       id: 6,
       name: "Organic Olive Oil",
       price: "₹319",
       image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop",
-      category: "Oils"
+      category: "Other Groceries"
     },
     {
       id: 7,
@@ -65,45 +70,61 @@ const Products = () => {
       name: "Fresh Broccoli",
       price: "₹79",
       image: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=400&h=400&fit=crop",
-      category: "Vegetables"
+      category: "Vegetables, Root Vegetables & Greens"
     },
     {
       id: 9,
       name: "Fresh Milk 1L",
       price: "₹69",
       image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=400&fit=crop",
-      category: "Dairy"
+      category: "Non-Vegetables"
     },
     {
       id: 10,
       name: "Fresh Eggs (12 pcs)",
       price: "₹99",
       image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400&h=400&fit=crop",
-      category: "Dairy"
+      category: "Non-Vegetables"
     },
     {
       id: 11,
       name: "Chicken Breast 500g",
       price: "₹179",
       image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=400&fit=crop",
-      category: "Meat"
+      category: "Non-Vegetables"
     },
     {
       id: 12,
       name: "Fresh Salmon 300g",
       price: "₹259",
       image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400&h=400&fit=crop",
-      category: "Meat"
+      category: "Non-Vegetables"
     }
   ];
 
-  // Load products from Supabase database
+  // Load products from Supabase database with optimistic loading
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true);
+      // Show cached data immediately for fast initial render
+      const cachedProducts = cache.get("adminProducts");
+      if (cachedProducts) {
+        // Format cached products
+        const formattedCached = cachedProducts.map(product => ({
+          ...product,
+          price: typeof product.price === 'number' 
+            ? `₹${product.price.toFixed(0)}` 
+            : product.price || '₹0'
+        }));
+        setProducts(formattedCached);
+        setIsLoading(false); // Show cached data immediately
+      } else {
+        setIsLoading(true);
+      }
+      
       setError("");
+      
+      // Fetch fresh data in background
       try {
-        // Fetch products from Supabase
         const productsData = await productsAPI.getAllProducts();
         
         // Format products for display (convert price to string format if needed)
@@ -115,27 +136,18 @@ const Products = () => {
         }));
         
         setProducts(formattedProducts);
+        setIsLoading(false);
         
-        // Also update localStorage for backward compatibility
-        localStorage.setItem("adminProducts", JSON.stringify(formattedProducts));
+        // Update cache with fresh data
+        cache.set("adminProducts", formattedProducts);
       } catch (err) {
         console.error("Error fetching products from database:", err);
         setError("Failed to load products. Showing cached products.");
         
-        // Fallback to localStorage if Supabase fails
-        const savedProducts = localStorage.getItem("adminProducts");
-        if (savedProducts) {
-          try {
-            const parsedProducts = JSON.parse(savedProducts);
-            setProducts(parsedProducts);
-          } catch (parseError) {
-            console.error("Error parsing cached products:", parseError);
-            setProducts(defaultProducts);
-          }
-        } else {
+        // If no cached data, use defaults
+        if (!cachedProducts) {
           setProducts(defaultProducts);
         }
-      } finally {
         setIsLoading(false);
       }
     };
@@ -186,7 +198,7 @@ const Products = () => {
 
   // Categories that are sold by weight (per kg)
   const isWeightBased = (category) => {
-    return ["Fruits", "Vegetables"].includes(category);
+    return ["Fruits", "Vegetables, Root Vegetables & Greens"].includes(category);
   };
 
   // Get increment value based on category (0.5 for weight-based, 1 for others)
@@ -256,12 +268,44 @@ const Products = () => {
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
+  // Filter products by category and/or search query
+  const filteredProducts = products.filter(product => {
+    // Filter by category if selected
+    if (selectedCategory && product.category !== selectedCategory) {
+      return false;
+    }
+    // Filter by search query if provided
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase().trim();
+      const productName = (product.name || "").toLowerCase();
+      const productCategory = (product.category || "").toLowerCase();
+      const productDescription = (product.description || "").toLowerCase();
+      
+      return productName.includes(query) || 
+             productCategory.includes(query) || 
+             productDescription.includes(query);
+    }
+    return true;
+  });
+
   return (
     <div className={styles.productsPage}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Our Products</h1>
-          <p className={styles.subtitle}>Browse our wide selection of fresh and quality products</p>
+          <h1 className={styles.title}>
+            {searchQuery 
+              ? `Search Results for "${searchQuery}"` 
+              : selectedCategory 
+                ? selectedCategory 
+                : "Our Products"}
+          </h1>
+          <p className={styles.subtitle}>
+            {searchQuery 
+              ? `Found ${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''}` 
+              : selectedCategory 
+                ? `Browse ${selectedCategory} products` 
+                : "Browse our wide selection of fresh and quality products"}
+          </p>
         </div>
 
         {isLoading ? (
@@ -273,9 +317,17 @@ const Products = () => {
           <div className={styles.errorState}>
             <p>{error}</p>
           </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className={styles.errorState}>
+            <p>
+              {selectedCategory 
+                ? `No products found in ${selectedCategory} category.` 
+                : "No products found."}
+            </p>
+          </div>
         ) : (
           <div className={styles.productsGrid}>
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
             <div key={product.id} className={styles.productCard}>
               <div className={styles.productImageWrapper}>
                 <div className={styles.productImage}>

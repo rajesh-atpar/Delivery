@@ -4,10 +4,17 @@
   box-sizing: border-box;
 }
 
-/* Hide search bar on laptop view */
+/* Show search bar on laptop view with adjusted styling */
 @media (min-width: 769px) {
   .searchContainer {
-    display: none;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .searchWrapper {
+    max-width: 600px;
+    margin: 0 auto;
   }
 }
 

@@ -81,7 +81,7 @@ const Payment = () => {
                 : "0";
               const price = parseFloat(priceStr) || 0;
               const qty = item.quantity || 1;
-              const isWeightBased = ["Fruits", "Vegetables"].includes(item.category);
+              const isWeightBased = ["Fruits", "Vegetables, Root Vegetables & Greens"].includes(item.category);
               const qtyDisplay = isWeightBased ? `${qty} kg` : qty;
               return (
                 <li key={item.id} className={styles.itemRow}>

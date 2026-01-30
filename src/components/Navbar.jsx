@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [location, setLocation] = useState("Getting location...");
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const profilePanelRef = useRef(null);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
@@ -225,18 +226,35 @@ const Navbar = () => {
 
           {/* Desktop Search Bar - Swapped position */}
           <div className={styles.desktopSearchContainer}>
-            <div className={styles.desktopSearchWrapper}>
+            <form 
+              className={styles.desktopSearchWrapper}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                  navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                  setSearchQuery("");
+                }
+              }}
+            >
               <FaSearch className={styles.desktopSearchIcon} />
               <input
                 type="text"
                 placeholder="Search products..."
                 className={styles.desktopSearchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && searchQuery.trim()) {
+                    navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                    setSearchQuery("");
+                  }
+                }}
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck="false"
               />
-            </div>
+            </form>
           </div>
 
           {/* Desktop Navigation Links - Swapped position */}

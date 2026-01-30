@@ -310,14 +310,23 @@ export const cartAPI = {
 // Products API using Supabase
 export const productsAPI = {
   getAllProducts: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    // Cache user check to avoid repeated calls
+    let user = null;
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      user = authUser;
+    } catch {
+      // User not authenticated, continue as public
+    }
     
     // For admin/authenticated users, get all products
     // For public, only get active products
+    // Only select necessary fields for faster queries
     const query = supabase
       .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id, name, price, image, category, description, stock_quantity, is_active, created_at')
+      .order('created_at', { ascending: false })
+      .limit(1000); // Limit results for performance
 
     if (!user) {
       // Public users only see active products
@@ -405,10 +414,155 @@ export const productsAPI = {
   },
 };
 
+// Categories API using Supabase
+export const categoriesAPI = {
+  getAllCategories: async () => {
+    // Only select necessary fields for faster queries
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, image, is_active')
+      .eq('is_active', true);
+
+    if (error) throw error;
+    
+    // Custom order: Fruits, Vegetables, Non-Vegetables, Cereal Grains & Pulses, Cleansing Products, Other Groceries
+    const customOrder = [
+      'Fruits',
+      'Vegetables',
+      'Non-Vegetables',
+      'Cereal Grains & Pulses',
+      'Cleansing Products',
+      'Other Groceries'
+    ];
+    
+    // Sort categories by custom order
+    const sortedData = (data || []).sort((a, b) => {
+      const indexA = customOrder.indexOf(a.name);
+      const indexB = customOrder.indexOf(b.name);
+      
+      // If both are in custom order, sort by their position
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+      // If only A is in custom order, it comes first
+      if (indexA !== -1) return -1;
+      // If only B is in custom order, it comes first
+      if (indexB !== -1) return 1;
+      // If neither is in custom order, sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
+    
+    return sortedData;
+  },
+
+  getAllCategoriesAdmin: async () => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to view all categories');
+
+    // Only select necessary fields for faster queries
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, image, is_active, created_at, updated_at');
+
+    if (error) throw error;
+    
+    // Custom order: Fruits, Vegetables, Non-Vegetables, Cereal Grains & Pulses, Cleansing Products, Other Groceries
+    const customOrder = [
+      'Fruits',
+      'Vegetables',
+      'Non-Vegetables',
+      'Cereal Grains & Pulses',
+      'Cleansing Products',
+      'Other Groceries'
+    ];
+    
+    // Sort categories by custom order
+    const sortedData = (data || []).sort((a, b) => {
+      const indexA = customOrder.indexOf(a.name);
+      const indexB = customOrder.indexOf(b.name);
+      
+      // If both are in custom order, sort by their position
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+      // If only A is in custom order, it comes first
+      if (indexA !== -1) return -1;
+      // If only B is in custom order, it comes first
+      if (indexB !== -1) return 1;
+      // If neither is in custom order, sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
+    
+    return sortedData;
+  },
+
+  getCategoryById: async (categoryId) => {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', categoryId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  createCategory: async (categoryData) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to create categories');
+
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({
+        name: categoryData.name,
+        image: categoryData.image,
+        is_active: categoryData.is_active !== undefined ? categoryData.is_active : true,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  updateCategory: async (categoryId, categoryData) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to update categories');
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update(categoryData)
+      .eq('id', categoryId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  deleteCategory: async (categoryId) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) throw new Error('User must be authenticated to delete categories');
+
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', categoryId);
+
+    if (error) throw error;
+    return { success: true };
+  },
+};
+
 export default {
   authAPI,
   userAPI,
   ordersAPI,
   cartAPI,
   productsAPI,
+  categoriesAPI,
 };

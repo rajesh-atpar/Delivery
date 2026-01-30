@@ -1,23 +1,33 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { productsAPI } from "../../services/api";
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave, FaImage, FaSignOutAlt, FaSpinner } from "react-icons/fa";
+import { productsAPI, categoriesAPI } from "../../services/api";
+import { cache } from "../../utils/cache";
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave, FaImage, FaSignOutAlt, FaSpinner, FaTags } from "react-icons/fa";
 import styles from "./Admin.module.css";
 
 const Admin = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [activeTab, setActiveTab] = useState("products"); // "products" or "categories"
   const [formData, setFormData] = useState({
     name: "",
     price: "",
     image: "",
     category: "Fruits",
     description: ""
+  });
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: "",
+    image: "",
+    is_active: true
   });
 
   // Check authentication on component mount
@@ -40,52 +50,78 @@ const Admin = () => {
     }
   }, [navigate]);
 
-  // Load products from Supabase on mount
+  // Load products and categories from Supabase on mount with optimistic loading
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
+    const fetchData = async () => {
+      // Show cached data immediately for fast initial render
+      const cachedProducts = cache.get("adminProducts");
+      const cachedCategories = cache.get("categories");
+      
+      if (cachedProducts) {
+        setProducts(cachedProducts);
+      }
+      
+      if (cachedCategories) {
+        setCategories(cachedCategories);
+      }
+      
+      // If we have cached data, show it immediately
+      if (cachedProducts || cachedCategories) {
+        setIsLoading(false);
+      } else {
+        setIsLoading(true);
+      }
+      
       setError("");
+      
+      // Fetch fresh data in background
       try {
-        const productsData = await productsAPI.getAllProducts();
+        const [productsData, categoriesData] = await Promise.all([
+          productsAPI.getAllProducts(),
+          categoriesAPI.getAllCategoriesAdmin()
+        ]);
         setProducts(productsData);
-        // Also update localStorage for backward compatibility with Products page
-        localStorage.setItem("adminProducts", JSON.stringify(productsData));
+        setCategories(categoriesData);
+        setIsLoading(false);
+        
+        // Update cache
+        cache.set("adminProducts", productsData);
+        cache.set("categories", categoriesData);
         window.dispatchEvent(new Event("productsUpdated"));
       } catch (err) {
-        console.error("Error fetching products:", err);
-        setError(err.message || "Failed to load products");
-        // Fallback to localStorage if Supabase fails
-        const savedProducts = localStorage.getItem("adminProducts");
-        if (savedProducts) {
-          try {
-            setProducts(JSON.parse(savedProducts));
-          } catch {
+        console.error("Error fetching data:", err);
+        setError(err.message || "Failed to load data");
+        // Fallback to cache if Supabase fails
+        if (!cachedProducts) {
+          const savedProducts = cache.get("adminProducts");
+          if (savedProducts) {
+            setProducts(savedProducts);
+          } else {
             setProducts([]);
           }
         }
-      } finally {
+        // Fallback categories
+        if (!cachedCategories) {
+          setCategories([
+            { id: "1", name: "Fruits", image: "", is_active: true },
+            { id: "2", name: "Vegetables", image: "", is_active: true },
+            { id: "3", name: "Non-Vegetables", image: "", is_active: true },
+            { id: "4", name: "Cereal Grains & Pulses", image: "", is_active: true },
+            { id: "5", name: "Other Groceries", image: "", is_active: true },
+            { id: "6", name: "Cleansing Products", image: "", is_active: true }
+          ]);
+        }
         setIsLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchData();
   }, []);
 
   // Debug: Log when isFormOpen changes
   useEffect(() => {
     console.log("isFormOpen state changed:", isFormOpen);
   }, [isFormOpen]);
-
-  const categories = [
-    "Fruits",
-    "Vegetables",
-    "Dairy",
-    "Meat",
-    "Grains",
-    "Beverages",
-    "Snacks",
-    "Oils"
-  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -98,11 +134,15 @@ const Admin = () => {
   const handleAddProduct = () => {
     console.log("Add Product button clicked");
     setEditingProduct(null);
+    const activeCategories = categories.filter(cat => cat.is_active);
+    const defaultCategory = activeCategories.length > 0 
+      ? activeCategories[0].name 
+      : (categories.length > 0 ? categories[0].name : "Fruits");
     setFormData({
       name: "",
       price: "",
       image: "",
-      category: "Fruits",
+      category: defaultCategory,
       description: ""
     });
     setIsFormOpen(true);
@@ -138,8 +178,8 @@ const Admin = () => {
         // Remove from local state
         const updatedProducts = products.filter(product => product.id !== id);
         setProducts(updatedProducts);
-        // Update localStorage
-        localStorage.setItem("adminProducts", JSON.stringify(updatedProducts));
+        // Update cache
+        cache.set("adminProducts", updatedProducts);
         window.dispatchEvent(new Event("productsUpdated"));
       } catch (err) {
         console.error("Error deleting product:", err);
@@ -190,13 +230,19 @@ const Admin = () => {
         localStorage.setItem("adminProducts", JSON.stringify(updatedProducts));
       }
       
+      // Clear cache to force refresh
+      cache.clear("adminProducts");
       window.dispatchEvent(new Event("productsUpdated"));
       setIsFormOpen(false);
+      const activeCategories = categories.filter(cat => cat.is_active);
+      const defaultCategory = activeCategories.length > 0 
+        ? activeCategories[0].name 
+        : (categories.length > 0 ? categories[0].name : "Fruits");
       setFormData({
         name: "",
         price: "",
         image: "",
-        category: "Fruits",
+        category: defaultCategory,
         description: ""
       });
       setEditingProduct(null);
@@ -209,14 +255,119 @@ const Admin = () => {
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setError("");
+    const activeCategories = categories.filter(cat => cat.is_active);
+    const defaultCategory = activeCategories.length > 0 
+      ? activeCategories[0].name 
+      : (categories.length > 0 ? categories[0].name : "Fruits");
     setFormData({
       name: "",
       price: "",
       image: "",
-      category: "Fruits",
+      category: defaultCategory,
       description: ""
     });
     setEditingProduct(null);
+  };
+
+  // Category management handlers
+  const handleAddCategory = () => {
+    setEditingCategory(null);
+    setCategoryFormData({
+      name: "",
+      image: "",
+      is_active: true
+    });
+    setIsCategoryFormOpen(true);
+  };
+
+  const handleEditCategory = (category) => {
+    setEditingCategory(category);
+    setCategoryFormData({
+      name: category.name,
+      image: category.image,
+      is_active: category.is_active
+    });
+    setIsCategoryFormOpen(true);
+  };
+
+  const handleDeleteCategory = async (id) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        await categoriesAPI.deleteCategory(id);
+        const updatedCategories = categories.filter(cat => cat.id !== id);
+        setCategories(updatedCategories);
+        // Update cache
+        cache.set("categories", updatedCategories);
+      } catch (err) {
+        console.error("Error deleting category:", err);
+        alert("Failed to delete category: " + (err.message || "Unknown error"));
+      }
+    }
+  };
+
+  const handleCategorySubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!categoryFormData.name.trim() || !categoryFormData.image.trim()) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      if (editingCategory) {
+        const updatedCategory = await categoriesAPI.updateCategory(editingCategory.id, {
+          name: categoryFormData.name,
+          image: categoryFormData.image,
+          is_active: categoryFormData.is_active,
+        });
+        const updatedCategories = categories.map(cat =>
+          cat.id === editingCategory.id ? updatedCategory : cat
+        );
+        setCategories(updatedCategories);
+        // Update cache
+        cache.set("categories", updatedCategories);
+      } else {
+        const newCategory = await categoriesAPI.createCategory({
+          name: categoryFormData.name,
+          image: categoryFormData.image,
+          is_active: categoryFormData.is_active,
+        });
+        setCategories([...categories, newCategory]);
+        // Update cache
+        cache.set("categories", [...categories, newCategory]);
+      }
+
+      setIsCategoryFormOpen(false);
+      setCategoryFormData({
+        name: "",
+        image: "",
+        is_active: true
+      });
+      setEditingCategory(null);
+    } catch (err) {
+      console.error("Error saving category:", err);
+      setError(err.message || "Failed to save category. Please try again.");
+    }
+  };
+
+  const handleCategoryInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setCategoryFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleCloseCategoryForm = () => {
+    setIsCategoryFormOpen(false);
+    setError("");
+    setCategoryFormData({
+      name: "",
+      image: "",
+      is_active: true
+    });
+    setEditingCategory(null);
   };
 
   const handleLogout = () => {
@@ -239,18 +390,42 @@ const Admin = () => {
         <div className={styles.header}>
           <div className={styles.headerContent}>
             <h1 className={styles.title}>Admin Dashboard</h1>
-            <p className={styles.subtitle}>Manage your products inventory</p>
+            <p className={styles.subtitle}>Manage your products and categories</p>
           </div>
           <div className={styles.headerActions}>
-            <button className={styles.addButton} onClick={handleAddProduct}>
-              <FaPlus />
-              <span>Add Product</span>
-            </button>
+            {activeTab === "products" ? (
+              <button className={styles.addButton} onClick={handleAddProduct}>
+                <FaPlus />
+                <span>Add Product</span>
+              </button>
+            ) : (
+              <button className={styles.addButton} onClick={handleAddCategory}>
+                <FaPlus />
+                <span>Add Category</span>
+              </button>
+            )}
             <button className={styles.logoutButton} onClick={handleLogout}>
               <FaSignOutAlt />
               <span>Logout</span>
             </button>
           </div>
+        </div>
+
+        {/* Tabs */}
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tab} ${activeTab === "products" ? styles.activeTab : ""}`}
+            onClick={() => setActiveTab("products")}
+          >
+            Products
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === "categories" ? styles.activeTab : ""}`}
+            onClick={() => setActiveTab("categories")}
+          >
+            <FaTags />
+            Categories
+          </button>
         </div>
 
         {/* Statistics Cards */}
@@ -261,10 +436,7 @@ const Admin = () => {
           </div>
           <div className={styles.statCard}>
             <div className={styles.statValue}>
-              {categories.reduce((acc, cat) => {
-                const count = products.filter(p => p.category === cat).length;
-                return count > 0 ? acc + 1 : acc;
-              }, 0)}
+              {categories.filter(cat => cat.is_active).length}
             </div>
             <div className={styles.statLabel}>Active Categories</div>
           </div>
@@ -285,11 +457,86 @@ const Admin = () => {
           </div>
         </div>
 
+        {/* Categories List */}
+        {activeTab === "categories" && (
+          <div className={styles.productsSection}>
+            <h2 className={styles.sectionTitle}>Categories List</h2>
+            
+            {isLoading ? (
+              <div className={styles.loadingState}>
+                <FaSpinner className={styles.spinner} />
+                <p>Loading categories...</p>
+              </div>
+            ) : error && categories.length === 0 ? (
+              <div className={styles.emptyState}>
+                <FaTags className={styles.emptyIcon} />
+                <p>{error}</p>
+              </div>
+            ) : categories.length === 0 ? (
+              <div className={styles.emptyState}>
+                <FaTags className={styles.emptyIcon} />
+                <p>No categories found. Add your first category to get started.</p>
+              </div>
+            ) : (
+              <div className={styles.productsList}>
+                {categories.map((category) => (
+                  <div key={category.id} className={styles.productRow}>
+                    <div className={styles.productImageSmall}>
+                      <img 
+                        src={category.image && category.image.trim() !== "" 
+                          ? category.image 
+                          : "https://via.placeholder.com/80?text=No+Image"} 
+                        alt={category.name}
+                        onError={(e) => {
+                          if (e.target.src !== "https://via.placeholder.com/80?text=No+Image") {
+                            e.target.src = "https://via.placeholder.com/80?text=No+Image";
+                          }
+                        }}
+                      />
+                    </div>
+                    
+                    <div className={styles.productInfo}>
+                      <div className={styles.productHeader}>
+                        <h3 className={styles.productName}>{category.name}</h3>
+                        <span className={`${styles.categoryBadge} ${!category.is_active ? styles.inactive : ''}`}>
+                          {category.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.productActions}>
+                      <button
+                        className={styles.editButton}
+                        onClick={() => handleEditCategory(category)}
+                        aria-label="Edit category"
+                        type="button"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className={styles.deleteButton}
+                        onClick={() => handleDeleteCategory(category.id)}
+                        aria-label="Delete category"
+                        type="button"
+                        title="Delete"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Products List */}
-        <div className={styles.productsSection}>
-          <h2 className={styles.sectionTitle}>Products List</h2>
-          
-          {isLoading ? (
+        {activeTab === "products" && (
+          <div className={styles.productsSection}>
+            <h2 className={styles.sectionTitle}>Products List</h2>
+            
+            {isLoading ? (
             <div className={styles.loadingState}>
               <FaSpinner className={styles.spinner} />
               <p>Loading products...</p>
@@ -361,8 +608,9 @@ const Admin = () => {
                 );
               })}
             </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Add/Edit Product Form Modal */}
         {isFormOpen && createPortal(
@@ -432,9 +680,22 @@ const Admin = () => {
                     className={styles.select}
                     required
                   >
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
+                    {(() => {
+                      const activeCategories = categories.filter(cat => cat.is_active);
+                      if (activeCategories.length > 0) {
+                        return activeCategories.map(cat => (
+                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                        ));
+                      } else if (categories.length > 0) {
+                        // If no active categories, show all categories
+                        return categories.map(cat => (
+                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                        ));
+                      } else {
+                        // Fallback if no categories at all
+                        return <option value="Fruits">Fruits</option>;
+                      }
+                    })()}
                   </select>
                 </div>
 
@@ -491,6 +752,105 @@ const Admin = () => {
                   <button type="submit" className={styles.saveButton}>
                     <FaSave />
                     <span>{editingProduct ? "Update" : "Add"} Product</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Add/Edit Category Form Modal */}
+        {isCategoryFormOpen && createPortal(
+          <div className={styles.modalOverlay} onClick={handleCloseCategoryForm}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <h2 className={styles.modalTitle}>
+                  {editingCategory ? "Edit Category" : "Add New Category"}
+                </h2>
+                <button
+                  className={styles.closeButton}
+                  onClick={handleCloseCategoryForm}
+                  aria-label="Close"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              <form onSubmit={handleCategorySubmit} className={styles.productForm}>
+                {error && (
+                  <div className={styles.errorMessage}>
+                    {error}
+                  </div>
+                )}
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="categoryName" className={styles.label}>
+                    Category Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="categoryName"
+                    name="name"
+                    value={categoryFormData.name}
+                    onChange={handleCategoryInputChange}
+                    className={styles.input}
+                    placeholder="Enter category name"
+                    required
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="categoryImage" className={styles.label}>
+                    Image URL *
+                  </label>
+                  <input
+                    type="url"
+                    id="categoryImage"
+                    name="image"
+                    value={categoryFormData.image}
+                    onChange={handleCategoryInputChange}
+                    className={styles.input}
+                    placeholder="https://example.com/image.jpg"
+                    required
+                  />
+                  {categoryFormData.image && (
+                    <div className={styles.imagePreview}>
+                      <img 
+                        src={categoryFormData.image} 
+                        alt="Preview"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="is_active"
+                      checked={categoryFormData.is_active}
+                      onChange={handleCategoryInputChange}
+                      className={styles.checkbox}
+                    />
+                    <span>Active (visible to users)</span>
+                  </label>
+                </div>
+
+                <div className={styles.formActions}>
+                  <button
+                    type="button"
+                    className={styles.cancelButton}
+                    onClick={handleCloseCategoryForm}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.saveButton}>
+                    <FaSave />
+                    <span>{editingCategory ? "Update" : "Add"} Category</span>
                   </button>
                 </div>
               </form>
