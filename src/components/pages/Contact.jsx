@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaSpinner } from "react-icons/fa";
+import emailjs from "@emailjs/browser";
 import styles from "./Contact.module.css";
 
 const Contact = () => {
@@ -9,20 +10,69 @@ const Contact = () => {
     phone: "",
     message: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ type: "", message: "" });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear status when user starts typing
+    if (submitStatus.type) {
+      setSubmitStatus({ type: "", message: "" });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setIsLoading(true);
+    setSubmitStatus({ type: "", message: "" });
+
+    try {
+      // Get EmailJS configuration from environment variables
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error("EmailJS is not configured. Please check your environment variables.");
+      }
+
+      // Initialize EmailJS with public key
+      emailjs.init(publicKey);
+
+      // Send email using EmailJS
+      const response = await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone || "Not provided",
+          message: formData.message,
+          to_email: "puscartdeliveryservice@gmail.com", // Your business email
+        }
+      );
+
+      if (response.status === 200) {
+        setSubmitStatus({
+          type: "success",
+          message: "Thank you for your message! We'll get back to you soon."
+        });
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        throw new Error("Failed to send message");
+      }
+    } catch (error) {
+      console.error("EmailJS error:", error);
+      setSubmitStatus({
+        type: "error",
+        message: error.message || "Failed to send message. Please try again later."
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,8 +98,8 @@ const Contact = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <h3 className={styles.infoTitle}>Phone</h3>
-                  <p className={styles.infoText}>+1 (555) 123-4567</p>
-                  <p className={styles.infoText}>+1 (555) 123-4568</p>
+                  <p className={styles.infoText}>+91 98941 22804</p>
+                  
                 </div>
               </div>
 
@@ -59,8 +109,8 @@ const Contact = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <h3 className={styles.infoTitle}>Email</h3>
-                  <p className={styles.infoText}>support@ppk.com</p>
-                  <p className={styles.infoText}>info@ppk.com</p>
+                  <p className={styles.infoText}>puscartdeliveryservice@gmail.com</p>
+                  
                 </div>
               </div>
 
@@ -70,9 +120,9 @@ const Contact = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <h3 className={styles.infoTitle}>Address</h3>
-                  <p className={styles.infoText}>123 Main Street</p>
-                  <p className={styles.infoText}>New York, NY 10001</p>
-                  <p className={styles.infoText}>United States</p>
+                  <p className={styles.infoText}>PUSCART NO.391</p>
+                  <p className={styles.infoText}>Thindivanam Main road,Opp to India One ATM,Somasipadi(PO),Kilpennathur (TK)</p>
+                  <p className={styles.infoText}>Tiruvannamalai,Tamilnadu-606611</p>
                 </div>
               </div>
 
@@ -82,7 +132,7 @@ const Contact = () => {
                 </div>
                 <div className={styles.infoContent}>
                   <h3 className={styles.infoTitle}>Business Hours</h3>
-                  <p className={styles.infoText}>Monday - Friday: 9:00 AM - 8:00 PM</p>
+                  <p className={styles.infoText}>Monday - Friday: 9:00 AM-8:00 PM</p>
                   <p className={styles.infoText}>Saturday: 10:00 AM - 6:00 PM</p>
                   <p className={styles.infoText}>Sunday: Closed</p>
                 </div>
@@ -92,6 +142,15 @@ const Contact = () => {
 
           <div className={styles.contactForm}>
             <h2 className={styles.sectionTitle}>Send us a Message</h2>
+            
+            {submitStatus.type && (
+              <div className={`${styles.statusMessage} ${
+                submitStatus.type === "success" ? styles.successMessage : styles.errorMessage
+              }`}>
+                {submitStatus.message}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
                 <label htmlFor="name" className={styles.label}>Full Name</label>
@@ -104,6 +163,7 @@ const Contact = () => {
                   className={styles.input}
                   placeholder="Enter your full name"
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -118,6 +178,7 @@ const Contact = () => {
                   className={styles.input}
                   placeholder="Enter your email"
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -131,6 +192,7 @@ const Contact = () => {
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="Enter your phone number"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -145,11 +207,22 @@ const Contact = () => {
                   placeholder="Enter your message"
                   rows="6"
                   required
+                  disabled={isLoading}
                 ></textarea>
               </div>
 
-              <button type="submit" className={styles.submitButton}>
-                Send Message
+              <button 
+                type="submit" 
+                className={styles.submitButton}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <FaSpinner className={styles.spinner} /> Sending...
+                  </>
+                ) : (
+                  "Send Message"
+                )}
               </button>
             </form>
           </div>

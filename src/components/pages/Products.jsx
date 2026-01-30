@@ -10,9 +10,6 @@ const Products = () => {
   const selectedCategory = searchParams.get("category");
   const searchQuery = searchParams.get("search");
   
-  // Default products (same as Admin page) - must be defined before getInitialProducts
-  
-  
   // Initialize with cached data for instant display
   const getInitialProducts = () => {
     const cached = cache.get("adminProducts");
@@ -24,7 +21,7 @@ const Products = () => {
           : product.price || '₹0'
       }));
     }
-    return defaultProducts;
+    return []; // Return empty array if no cached data
   };
   
   const [products, setProducts] = useState(getInitialProducts());

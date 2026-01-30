@@ -486,6 +486,12 @@
   transform: translateY(0);
 }
 
+.loadingSpinner {
+  font-size: 2rem;
+  color: #3b82f6;
+  animation: spin 1s linear infinite;
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);

@@ -5,23 +5,30 @@ import logoImage from "../assets/Puscart logo.jpeg";
 const Loading = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [displayedText, setDisplayedText] = useState("");
+  const fullText = "Your Ultimate Shopping Destination";
 
   useEffect(() => {
-    // Check if we have cached data - if yes, skip loading screen
-    const hasCachedData = localStorage.getItem("adminProducts") || localStorage.getItem("categories");
-    
-    if (hasCachedData) {
-      // If cached data exists, show app immediately
-      setIsLoading(false);
-      return;
-    }
-    
-    // Only show loading screen if no cached data (first visit)
+    // Typing animation
+    let currentIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (currentIndex < fullText.length) {
+        setDisplayedText(fullText.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 70); // Type each character every 100ms
+
+    // Show loading screen for longer duration to allow typing animation to complete
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500); // Reduced to 0.5 seconds for first visit
+    }, 4000); // Show loading screen for 5 seconds to allow typing animation
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(typingInterval);
+    };
   }, []);
 
   if (isLoading) {
@@ -42,7 +49,9 @@ const Loading = ({ children }) => {
               </div>
             )}
           </div>
-          <div className={styles.loadingSpinner}></div>
+          <div className={styles.typingText}>
+            {displayedText}
+          </div>
         </div>
       </div>
     );

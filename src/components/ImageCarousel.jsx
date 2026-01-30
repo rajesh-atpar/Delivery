@@ -4,13 +4,13 @@ import styles from "./ImageCarousel.module.css";
 const ImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Sample images - you can replace these with your actual images
+  // Category-related images for grocery store
   const images = [
-    "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1200&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1200&h=400&fit=crop"
+    "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&h=400&fit=crop", // Fresh Fruits
+    "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=400&fit=crop", // Fresh Vegetables
+    "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=1200&h=400&fit=crop", // Cereal Grains & Pulses
+    "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=1200&h=400&fit=crop", // Non-Vegetables (Meat/Fish)
+    "https://images.unsplash.com/photo-1556910096-6f5e72db6803?w=1200&h=400&fit=crop" // Other Groceries
   ];
 
   useEffect(() => {

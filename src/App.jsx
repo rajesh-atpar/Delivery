@@ -21,6 +21,7 @@ import About from "./components/pages/About";
 import Contact from "./components/pages/Contact";
 import Admin from "./components/pages/Admin";
 import AdminLogin from "./components/pages/AdminLogin";
+import ForgotPassword from "./components/pages/ForgotPassword";
 import Categories from "./components/pages/Categories";
 import Loading from "./components/Loading";
 import ImageCarousel from "./components/ImageCarousel";
@@ -193,6 +194,7 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin" element={<ProtectedAdmin />} />
       </Routes>
       {/* Hide Footer for admin routes */}

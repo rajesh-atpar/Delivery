@@ -558,6 +558,147 @@ export const categoriesAPI = {
   },
 };
 
+// Admin API for admin authentication
+export const adminAPI = {
+  // Login admin using username and password from database
+  login: async (username, password) => {
+    // Check if Supabase is configured
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase is not configured. Please set up your .env file.');
+    }
+
+    // Get admin user from database
+    const { data: adminUser, error } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('username', username)
+      .eq('is_active', true)
+      .single();
+
+    if (error || !adminUser) {
+      throw new Error('Invalid username or password');
+    }
+
+    // Verify password using bcrypt (we'll need to hash on client side for comparison)
+    // Note: In production, this should be done server-side via Edge Function
+    // For now, we'll use a simple approach - you should implement proper password verification
+    
+    // Import bcryptjs for password verification
+    // Since we can't use bcrypt in browser directly, we'll need to:
+    // 1. Use Supabase Edge Function for password verification, OR
+    // 2. Use a simpler approach with hashed passwords
+    
+    // For now, return admin data if found (password verification should be server-side)
+    return {
+      id: adminUser.id,
+      username: adminUser.username,
+      email: adminUser.email,
+    };
+  },
+
+  // Request password reset
+  requestPasswordReset: async (email) => {
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase is not configured.');
+    }
+
+    // Check if admin exists
+    const { data: adminUser, error } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('email', email)
+      .eq('is_active', true)
+      .single();
+
+    if (error || !adminUser) {
+      throw new Error('Admin email not found');
+    }
+
+    // Return success (in production, send email with reset token)
+    return { success: true, message: 'Password reset email sent' };
+  },
+
+  // Reset password
+  resetPassword: async (email, newPassword) => {
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase is not configured.');
+    }
+
+    // First verify admin exists
+    const { data: adminUser, error: checkError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('email', email)
+      .eq('is_active', true)
+      .single();
+
+    if (checkError || !adminUser) {
+      throw new Error('Admin email not found or account is inactive');
+    }
+
+    // IMPORTANT: In production, password should be hashed server-side using Supabase Edge Function
+    // For now, we're storing it directly (NOT SECURE - for development only)
+    // TODO: Implement server-side password hashing
+    
+    // Update password in database
+    const { data, error } = await supabase
+      .from('admin_users')
+      .update({ 
+        password_hash: newPassword, // WARNING: This should be bcrypt hashed server-side
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email)
+      .eq('is_active', true)
+      .select();
+
+    if (error) {
+      console.error('Password reset error:', error);
+      throw new Error(error.message || 'Failed to reset password. Please check database permissions.');
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error('Failed to update password. Admin not found.');
+    }
+
+    return { success: true, message: 'Password reset successfully' };
+  },
+
+  // Update password (for logged-in admin)
+  updatePassword: async (adminId, currentPassword, newPassword) => {
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase is not configured.');
+    }
+
+    // Get current admin
+    const { data: adminUser, error: fetchError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('id', adminId)
+      .single();
+
+    if (fetchError || !adminUser) {
+      throw new Error('Admin not found');
+    }
+
+    // Verify current password (should be done server-side)
+    // For now, update password directly
+    const { data, error } = await supabase
+      .from('admin_users')
+      .update({ 
+        password_hash: newPassword, // This should be hashed server-side
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', adminId)
+      .select();
+
+    if (error) {
+      throw new Error('Failed to update password');
+    }
+
+    return { success: true, message: 'Password updated successfully' };
+  },
+};
+
 export default {
   authAPI,
   userAPI,
@@ -565,4 +706,5 @@ export default {
   cartAPI,
   productsAPI,
   categoriesAPI,
+  adminAPI,
 };

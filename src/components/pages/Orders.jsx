@@ -294,7 +294,7 @@ const Orders = () => {
           flexDirection: "column",
           gap: "1rem"
         }}>
-          <FaSpinner style={{ fontSize: "2rem", color: "#3b82f6", animation: "spin 1s linear infinite" }} />
+          <FaSpinner className={styles.loadingSpinner} />
           <p style={{ color: "#64748b" }}>Loading your orders...</p>
         </div>
       </div>

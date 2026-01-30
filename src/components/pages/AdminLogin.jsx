@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaLock, FaUser } from "react-icons/fa";
+import { adminAPI } from "../../services/api";
 import styles from "./AdminLogin.module.css";
 
 const AdminLogin = () => {
@@ -24,28 +25,30 @@ const AdminLogin = () => {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-      // Simulate authentication (replace with real authentication)
-    setTimeout(() => {
-      // Default admin credentials (in production, use secure authentication)
-      if (credentials.username === "admin" && credentials.password === "admin123") {
-        // Store authentication token - will be cleared on page refresh
-        // Using a combination of sessionStorage and a flag
-        sessionStorage.setItem("adminAuth", "true");
-        sessionStorage.setItem("adminUser", credentials.username);
-        sessionStorage.setItem("adminAuthTime", Date.now().toString());
-        // Set a flag that persists only for this navigation
-        window.adminAuthenticated = true;
-        navigate("/admin", { replace: true });
-      } else {
-        setError("Invalid username or password");
-        setIsLoading(false);
-      }
-    }, 500);
+    try {
+      // Authenticate with database
+      const adminData = await adminAPI.login(credentials.username, credentials.password);
+      
+      // Store authentication token - will be cleared on page refresh
+      sessionStorage.setItem("adminAuth", "true");
+      sessionStorage.setItem("adminUser", adminData.username);
+      sessionStorage.setItem("adminUserId", adminData.id);
+      sessionStorage.setItem("adminUserEmail", adminData.email);
+      sessionStorage.setItem("adminAuthTime", Date.now().toString());
+      
+      // Set a flag that persists only for this navigation
+      window.adminAuthenticated = true;
+      navigate("/admin", { replace: true });
+    } catch (err) {
+      console.error("Admin login error:", err);
+      setError(err.message || "Invalid username or password");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -54,7 +57,7 @@ const AdminLogin = () => {
         <div className={styles.loginCard}>
           <div className={styles.loginHeader}>
             <div className={styles.logo}>
-              <span className={styles.logoText}>PPK</span>
+              <span className={styles.logoText}>PUSCART</span>
             </div>
             <h1 className={styles.title}>Admin Login</h1>
             <p className={styles.subtitle}>Enter your credentials to access the admin dashboard</p>
@@ -111,6 +114,12 @@ const AdminLogin = () => {
               {isLoading ? "Logging in..." : "Login"}
             </button>
           </form>
+
+          <div className={styles.forgotPasswordLink}>
+            <Link to="/admin/forgot-password" className={styles.forgotLink}>
+              Forgot Password?
+            </Link>
+          </div>
 
           <div className={styles.loginFooter}>
             <p className={styles.helpText}>
