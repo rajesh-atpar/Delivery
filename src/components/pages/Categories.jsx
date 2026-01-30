@@ -5,79 +5,77 @@ import { cache } from "../../utils/cache";
 import styles from "./Categories.module.css";
 
 const Categories = () => {
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Initialize with cached data or defaults for instant display
+  const getInitialCategories = () => {
+    const cached = cache.get("categories");
+    if (cached && cached.length > 0) {
+      return cached.map(cat => ({
+        ...cat,
+        image: cat.image && cat.image.trim() !== "" 
+          ? cat.image 
+          : "https://via.placeholder.com/100?text=Category"
+      }));
+    }
+    // Return default categories immediately
+    return [
+      { 
+        id: "1",
+        name: "Fruits", 
+        image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=400&fit=crop"
+      },
+      { 
+        id: "2",
+        name: "Vegetables", 
+        image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop"
+      },
+      { 
+        id: "3",
+        name: "Non-Vegetables", 
+        image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=400&fit=crop"
+      },
+      { 
+        id: "4",
+        name: "Cereal Grains & Pulses", 
+        image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop"
+      },
+      { 
+        id: "5",
+        name: "Cleansing Products", 
+        image: "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?w=400&h=400&fit=crop"
+      },
+      { 
+        id: "6",
+        name: "Other Groceries", 
+        image: "https://images.unsplash.com/photo-1556910096-6f5e72db6803?w=400&h=400&fit=crop"
+      }
+    ];
+  };
+  
+  const [categories, setCategories] = useState(getInitialCategories());
+  const [isLoading, setIsLoading] = useState(false); // Start with false since we have defaults
 
   useEffect(() => {
+    // Fetch fresh data in background (non-blocking) - data already shown from initial state
     const fetchCategories = async () => {
-      // Show cached categories immediately for fast initial render
-      const cachedCategories = cache.get("categories");
-      if (cachedCategories) {
-        const categoriesWithImages = cachedCategories.map(cat => ({
-          ...cat,
-          image: cat.image && cat.image.trim() !== "" 
-            ? cat.image 
-            : "https://via.placeholder.com/100?text=Category"
-        }));
-        setCategories(categoriesWithImages);
-        setIsLoading(false); // Show cached data immediately
-      } else {
-        setIsLoading(true);
-      }
-      
-      // Fetch fresh data in background
-      try {
-        const categoriesData = await categoriesAPI.getAllCategories();
-        // Ensure all categories have valid image URLs
-        const categoriesWithImages = categoriesData.map(cat => ({
-          ...cat,
-          image: cat.image && cat.image.trim() !== "" 
-            ? cat.image 
-            : "https://via.placeholder.com/100?text=Category"
-        }));
-        setCategories(categoriesWithImages);
-        setIsLoading(false);
-        
-        // Update cache
-        cache.set("categories", categoriesWithImages);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        // Fallback to default categories if API fails (in custom order)
-        setCategories([
-          { 
-            id: "1",
-            name: "Fruits", 
-            image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=400&fit=crop"
-          },
-          { 
-            id: "2",
-            name: "Vegetables", 
-            image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop"
-          },
-          { 
-            id: "3",
-            name: "Non-Vegetables", 
-            image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=400&fit=crop"
-          },
-          { 
-            id: "4",
-            name: "Cereal Grains & Pulses", 
-            image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop"
-          },
-          { 
-            id: "5",
-            name: "Cleansing Products", 
-            image: "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?w=400&h=400&fit=crop"
-          },
-          { 
-            id: "6",
-            name: "Other Groceries", 
-            image: "https://images.unsplash.com/photo-1556910096-6f5e72db6803?w=400&h=400&fit=crop"
-          }
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
+      setTimeout(async () => {
+        try {
+          const categoriesData = await categoriesAPI.getAllCategories();
+          // Ensure all categories have valid image URLs
+          const categoriesWithImages = categoriesData.map(cat => ({
+            ...cat,
+            image: cat.image && cat.image.trim() !== "" 
+              ? cat.image 
+              : "https://via.placeholder.com/100?text=Category"
+          }));
+          setCategories(categoriesWithImages);
+          
+          // Update cache
+          cache.set("categories", categoriesWithImages);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          // Error already handled above, keep existing categories
+        }
+      }, 0); // Execute in next tick, non-blocking
     };
 
     fetchCategories();

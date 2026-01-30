@@ -8,8 +8,30 @@ import styles from "./Admin.module.css";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  
+  // Initialize with cached data for instant display
+  const getInitialProducts = () => {
+    const cached = cache.get("adminProducts");
+    return cached && cached.length > 0 ? cached : [];
+  };
+  
+  const getInitialCategories = () => {
+    const cached = cache.get("categories");
+    if (cached && cached.length > 0) {
+      return cached;
+    }
+    return [
+      { id: "1", name: "Fruits", image: "", is_active: true },
+      { id: "2", name: "Vegetables", image: "", is_active: true },
+      { id: "3", name: "Non-Vegetables", image: "", is_active: true },
+      { id: "4", name: "Cereal Grains & Pulses", image: "", is_active: true },
+      { id: "5", name: "Other Groceries", image: "", is_active: true },
+      { id: "6", name: "Cleansing Products", image: "", is_active: true }
+    ];
+  };
+  
+  const [products, setProducts] = useState(getInitialProducts());
+  const [categories, setCategories] = useState(getInitialCategories());
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,69 +72,44 @@ const Admin = () => {
     }
   }, [navigate]);
 
-  // Load products and categories from Supabase on mount with optimistic loading
+  // Load products and categories from Supabase on mount with instant display
   useEffect(() => {
+    // Data already shown from initial state - fetch fresh data in background
     const fetchData = async () => {
-      // Show cached data immediately for fast initial render
+      // If we have cached data, no loading state needed
       const cachedProducts = cache.get("adminProducts");
       const cachedCategories = cache.get("categories");
       
-      if (cachedProducts) {
-        setProducts(cachedProducts);
-      }
-      
-      if (cachedCategories) {
-        setCategories(cachedCategories);
-      }
-      
-      // If we have cached data, show it immediately
-      if (cachedProducts || cachedCategories) {
+      if ((cachedProducts && cachedProducts.length > 0) || (cachedCategories && cachedCategories.length > 0)) {
         setIsLoading(false);
       } else {
-        setIsLoading(true);
+        setIsLoading(false); // Still no loading - show empty/default state
       }
       
       setError("");
       
-      // Fetch fresh data in background
-      try {
-        const [productsData, categoriesData] = await Promise.all([
-          productsAPI.getAllProducts(),
-          categoriesAPI.getAllCategoriesAdmin()
-        ]);
-        setProducts(productsData);
-        setCategories(categoriesData);
-        setIsLoading(false);
-        
-        // Update cache
-        cache.set("adminProducts", productsData);
-        cache.set("categories", categoriesData);
-        window.dispatchEvent(new Event("productsUpdated"));
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError(err.message || "Failed to load data");
-        // Fallback to cache if Supabase fails
-        if (!cachedProducts) {
-          const savedProducts = cache.get("adminProducts");
-          if (savedProducts) {
-            setProducts(savedProducts);
-          } else {
-            setProducts([]);
+      // Fetch fresh data in background (non-blocking)
+      setTimeout(async () => {
+        try {
+          const [productsData, categoriesData] = await Promise.all([
+            productsAPI.getAllProducts(),
+            categoriesAPI.getAllCategoriesAdmin()
+          ]);
+          setProducts(productsData);
+          setCategories(categoriesData);
+          
+          // Update cache
+          cache.set("adminProducts", productsData);
+          cache.set("categories", categoriesData);
+          window.dispatchEvent(new Event("productsUpdated"));
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          // Don't show error if we have cached data
+          if (!cachedProducts && !cachedCategories) {
+            setError(err.message || "Failed to load data");
           }
         }
-        // Fallback categories
-        if (!cachedCategories) {
-          setCategories([
-            { id: "1", name: "Fruits", image: "", is_active: true },
-            { id: "2", name: "Vegetables", image: "", is_active: true },
-            { id: "3", name: "Non-Vegetables", image: "", is_active: true },
-            { id: "4", name: "Cereal Grains & Pulses", image: "", is_active: true },
-            { id: "5", name: "Other Groceries", image: "", is_active: true },
-            { id: "6", name: "Cleansing Products", image: "", is_active: true }
-          ]);
-        }
-        setIsLoading(false);
-      }
+      }, 0); // Execute in next tick, non-blocking
     };
 
     fetchData();

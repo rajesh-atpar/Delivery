@@ -1,5 +1,5 @@
 // Cache utility for managing localStorage cache with expiration
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds (increased for better performance)
 
 export const cache = {
   set: (key, data) => {

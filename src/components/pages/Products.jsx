@@ -9,147 +9,64 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
   const searchQuery = searchParams.get("search");
-  const [products, setProducts] = useState([]);
+  
+  // Default products (same as Admin page) - must be defined before getInitialProducts
+  
+  
+  // Initialize with cached data for instant display
+  const getInitialProducts = () => {
+    const cached = cache.get("adminProducts");
+    if (cached && cached.length > 0) {
+      return cached.map(product => ({
+        ...product,
+        price: typeof product.price === 'number' 
+          ? `₹${product.price.toFixed(0)}` 
+          : product.price || '₹0'
+      }));
+    }
+    return defaultProducts;
+  };
+  
+  const [products, setProducts] = useState(getInitialProducts());
   const [cartQuantities, setCartQuantities] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Start with false since we have cached/default data
   const [error, setError] = useState("");
 
-  // Default products (same as Admin page)
-  const defaultProducts = [
-    {
-      id: 1,
-      name: "Fresh Organic Apples",
-      price: "₹99",
-      image: "https://plus.unsplash.com/premium_photo-1667049292983-d2524dd0ef08?q=80&w=1149&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      category: "Fruits"
-    },
-    {
-      id: 2,
-      name: "Fresh Tomatoes",
-      price: "₹69",
-      image: "https://plus.unsplash.com/premium_photo-1724849418331-97502da20f86?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTAzfHxmcmVzaCUyMHRvbWF0b3xlbnwwfHwwfHx8MA%3D%3D",
-      category: "Vegetables, Root Vegetables & Greens"
-    },
-    {
-      id: 3,
-      name: "Premium Rice 5kg",
-      price: "₹259",
-      image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
-      category: "Cereal Grains & Pulses"
-    },
-    {
-      id: 4,
-      name: "Fresh Bananas",
-      price: "₹59",
-      image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop",
-      category: "Fruits"
-    },
-    {
-      id: 5,
-      name: "Fresh Carrots",
-      price: "₹49",
-      image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop",
-      category: "Vegetables, Root Vegetables & Greens"
-    },
-    {
-      id: 6,
-      name: "Organic Olive Oil",
-      price: "₹319",
-      image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop",
-      category: "Other Groceries"
-    },
-    {
-      id: 7,
-      name: "Fresh Strawberries",
-      price: "₹119",
-      image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=400&fit=crop",
-      category: "Fruits"
-    },
-    {
-      id: 8,
-      name: "Fresh Broccoli",
-      price: "₹79",
-      image: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=400&h=400&fit=crop",
-      category: "Vegetables, Root Vegetables & Greens"
-    },
-    {
-      id: 9,
-      name: "Fresh Milk 1L",
-      price: "₹69",
-      image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=400&fit=crop",
-      category: "Non-Vegetables"
-    },
-    {
-      id: 10,
-      name: "Fresh Eggs (12 pcs)",
-      price: "₹99",
-      image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400&h=400&fit=crop",
-      category: "Non-Vegetables"
-    },
-    {
-      id: 11,
-      name: "Chicken Breast 500g",
-      price: "₹179",
-      image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=400&fit=crop",
-      category: "Non-Vegetables"
-    },
-    {
-      id: 12,
-      name: "Fresh Salmon 300g",
-      price: "₹259",
-      image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400&h=400&fit=crop",
-      category: "Non-Vegetables"
-    }
-  ];
-
-  // Load products from Supabase database with optimistic loading
+  // Load products from Supabase database with instant display
   useEffect(() => {
+    // Data already shown from initial state - fetch fresh data in background
     const fetchProducts = async () => {
-      // Show cached data immediately for fast initial render
-      const cachedProducts = cache.get("adminProducts");
-      if (cachedProducts) {
-        // Format cached products
-        const formattedCached = cachedProducts.map(product => ({
-          ...product,
-          price: typeof product.price === 'number' 
-            ? `₹${product.price.toFixed(0)}` 
-            : product.price || '₹0'
-        }));
-        setProducts(formattedCached);
-        setIsLoading(false); // Show cached data immediately
-      } else {
-        setIsLoading(true);
-      }
-      
       setError("");
       
-      // Fetch fresh data in background
-      try {
-        const productsData = await productsAPI.getAllProducts();
-        
-        // Format products for display (convert price to string format if needed)
-        const formattedProducts = productsData.map(product => ({
-          ...product,
-          price: typeof product.price === 'number' 
-            ? `₹${product.price.toFixed(0)}` 
-            : product.price || '₹0'
-        }));
-        
-        setProducts(formattedProducts);
-        setIsLoading(false);
-        
-        // Update cache with fresh data
-        cache.set("adminProducts", formattedProducts);
-      } catch (err) {
-        console.error("Error fetching products from database:", err);
-        setError("Failed to load products. Showing cached products.");
-        
-        // If no cached data, use defaults
-        if (!cachedProducts) {
-          setProducts(defaultProducts);
+      // Check if we have cached data
+      const cachedProducts = cache.get("adminProducts");
+      
+      // Fetch fresh data in background (non-blocking)
+      setTimeout(async () => {
+        try {
+          const productsData = await productsAPI.getAllProducts();
+          
+          // Format products for display (convert price to string format if needed)
+          const formattedProducts = productsData.map(product => ({
+            ...product,
+            price: typeof product.price === 'number' 
+              ? `₹${product.price.toFixed(0)}` 
+              : product.price || '₹0'
+          }));
+          
+          // Only update if data changed
+          setProducts(formattedProducts);
+          
+          // Update cache with fresh data
+          cache.set("adminProducts", formattedProducts);
+        } catch (err) {
+          console.error("Error fetching products from database:", err);
+          // Don't show error if we have cached data
+          if (!cachedProducts || cachedProducts.length === 0) {
+            setError("Failed to load products. Showing default products.");
+          }
         }
-        setIsLoading(false);
-      }
+      }, 0); // Execute in next tick, non-blocking
     };
 
     fetchProducts();

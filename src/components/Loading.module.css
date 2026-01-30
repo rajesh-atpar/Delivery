@@ -32,6 +32,92 @@
   height: 120px;
   object-fit: contain;
   filter: drop-shadow(0 4px 20px rgba(255, 255, 255, 0.3));
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.logoFallback {
+  width: 120px;
+  height: 120px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+}
+
+.logoText {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #3b82f6;
+  line-height: 1;
+}
+
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  .logoImage,
+  .logoFallback {
+    width: 100px;
+    height: 100px;
+    min-width: 80px;
+    min-height: 80px;
+  }
+  
+  .logoText {
+    font-size: 2.5rem;
+  }
+  
+  .loadingContent {
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .logoContainer {
+    width: 100px;
+    height: 100px;
+    min-width: 80px;
+    min-height: 80px;
+  }
+  
+  .loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logoImage,
+  .logoFallback {
+    width: 80px;
+    height: 80px;
+    min-width: 60px;
+    min-height: 60px;
+  }
+  
+  .logoText {
+    font-size: 2rem;
+  }
+  
+  .loadingContent {
+    gap: 1.25rem;
+    padding: 0.75rem;
+  }
+  
+  .logoContainer {
+    width: 80px;
+    height: 80px;
+    min-width: 60px;
+    min-height: 60px;
+  }
+  
+  .loadingSpinner {
+    width: 35px;
+    height: 35px;
+    border-width: 3px;
+  }
 }
 
 .loadingSpinner {

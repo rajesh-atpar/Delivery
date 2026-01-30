@@ -117,6 +117,9 @@ const Home = () => {
                 <h3 className={styles.productName}>{product.name}</h3>
                 <div className={styles.productPriceRow}>
                   <span className={styles.productPrice}>{product.price}</span>
+                  <Link to="/products" className={styles.viewButton}>
+                    View
+                  </Link>
                 </div>
               </div>
             </div>
