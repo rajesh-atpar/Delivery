@@ -278,11 +278,11 @@ const Cart = () => {
             </div>
             <div className={styles.summaryRow}>
               <span>Delivery</span>
-              <span className={total > 500 ? styles.free : ""}>{total > 500 ? "Free" : "₹50"}</span>
+              <span className={total > 300 ? styles.free : ""}>{total > 300 ? "Free" : "₹50"}</span>
             </div>
             <div className={styles.summaryRowTotal}>
               <span>Total</span>
-              <span>₹{(total + (total > 500 ? 0 : 50)).toFixed(0)}</span>
+              <span>₹{(total + (total > 300 ? 0 : 50)).toFixed(0)}</span>
             </div>
             <Link to="/checkout" className={styles.checkoutButton}>
               Proceed to Checkout
@@ -298,7 +298,7 @@ const Cart = () => {
           <div className={styles.benefitCard}>
             <div className={styles.benefitIcon}>🚚</div>
             <h3 className={styles.benefitTitle}>Free Shipping</h3>
-            <p className={styles.benefitText}>On orders over ₹500</p>
+            <p className={styles.benefitText}>On orders over ₹300</p>
           </div>
           <div className={styles.benefitCard}>
             <div className={styles.benefitIcon}>↩️</div>

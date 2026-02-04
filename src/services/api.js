@@ -2,12 +2,6 @@ import { supabase, getUserProfile, upsertUserProfile } from '../lib/supabase';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
-// Helper function to get auth token (for Supabase session)
-const getAuthToken = () => {
-  // Supabase stores session in localStorage, but we'll use the session from supabase client
-  return null; // Not needed for Supabase
-};
-
 // Helper function to make API requests (for custom API endpoints if needed)
 const apiRequest = async (endpoint, options = {}) => {
   const { data: { session } } = await supabase.auth.getSession();
@@ -25,11 +19,8 @@ const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
-    // Handle 401 Unauthorized - token expired or invalid
     if (response.status === 401) {
-      // Clear auth data
       await supabase.auth.signOut();
-      // Redirect to login if not already there
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
@@ -52,7 +43,6 @@ const apiRequest = async (endpoint, options = {}) => {
 // Authentication API using Supabase
 export const authAPI = {
   login: async (email, password) => {
-    // Check if Supabase is configured
     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
       throw new Error('Supabase is not configured. Please set up your .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
     }
@@ -64,12 +54,10 @@ export const authAPI = {
 
     if (error) throw error;
 
-    // Get user profile from profiles table
     let profile = null;
     try {
       profile = await getUserProfile(data.user.id);
     } catch (profileError) {
-      // If profile doesn't exist, create a basic one
       console.log('Profile not found, creating basic profile');
       profile = {
         id: data.user.id,
@@ -92,14 +80,12 @@ export const authAPI = {
   },
 
   register: async (userData) => {
-    // Check if Supabase is configured
     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
       throw new Error('Supabase is not configured. Please set up your .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
     }
 
     const { email, password, first_name, last_name, phone, address } = userData;
 
-    // Sign up user with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -115,7 +101,6 @@ export const authAPI = {
 
     if (authError) throw authError;
 
-    // Create user profile in profiles table
     if (authData.user) {
       try {
         const profile = await upsertUserProfile(authData.user.id, {
@@ -135,7 +120,6 @@ export const authAPI = {
         };
       } catch (profileError) {
         console.error('Error creating profile:', profileError);
-        // Still return user data even if profile creation fails
         return {
           user: {
             id: authData.user.id,
@@ -166,16 +150,27 @@ export const userAPI = {
     if (error) throw error;
     if (!user) throw new Error('User not authenticated');
 
-    // Get profile from profiles table
     try {
       const profile = await getUserProfile(user.id);
+      // If profile is null (doesn't exist or 406 error), use user metadata
+      if (!profile) {
+        return {
+          id: user.id,
+          email: user.email,
+          first_name: user.user_metadata?.first_name || '',
+          last_name: user.user_metadata?.last_name || '',
+          phone: user.user_metadata?.phone || '',
+          address: user.user_metadata?.address || '',
+        };
+      }
       return {
         id: user.id,
         email: user.email,
         ...profile,
       };
     } catch (profileError) {
-      // If profile doesn't exist, return user metadata
+      console.warn('Profile fetch error (non-critical):', profileError);
+      // Return user data from metadata as fallback
       return {
         id: user.id,
         email: user.email,
@@ -192,10 +187,8 @@ export const userAPI = {
     if (userError) throw userError;
     if (!user) throw new Error('User not authenticated');
 
-    // Update profile in profiles table
     const updatedProfile = await upsertUserProfile(user.id, userData);
 
-    // Also update user metadata in auth
     const { error: updateError } = await supabase.auth.updateUser({
       data: {
         first_name: userData.first_name,
@@ -253,7 +246,6 @@ export const ordersAPI = {
     if (userError) throw userError;
     if (!user) throw new Error('User not authenticated');
 
-    // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
     const { data, error } = await supabase
@@ -310,7 +302,6 @@ export const cartAPI = {
 // Products API using Supabase
 export const productsAPI = {
   getAllProducts: async () => {
-    // Cache user check to avoid repeated calls
     let user = null;
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -319,17 +310,13 @@ export const productsAPI = {
       // User not authenticated, continue as public
     }
     
-    // For admin/authenticated users, get all products
-    // For public, only get active products
-    // Only select necessary fields for faster queries
     const query = supabase
       .from('products')
       .select('id, name, price, image, category, description, stock_quantity, is_active, created_at')
       .order('created_at', { ascending: false })
-      .limit(1000); // Limit results for performance
+      .limit(1000);
 
     if (!user) {
-      // Public users only see active products
       query.eq('is_active', true);
     }
 
@@ -350,38 +337,64 @@ export const productsAPI = {
   },
 
   createProduct: async (productData) => {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!user) throw new Error('User must be authenticated to create products');
+    const isAdminAuthenticated = typeof window !== 'undefined' && (
+      window.adminAuthenticated === true || 
+      sessionStorage.getItem("adminAuth") === "true"
+    );
+    
+    let user = null;
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      user = authUser;
+    } catch (userError) {
+      if (!isAdminAuthenticated) {
+        throw new Error('User must be authenticated to create products');
+      }
+    }
 
-    // Parse price - remove ₹ symbol if present
     const priceStr = String(productData.price || '0').replace('₹', '').replace(',', '');
     const price = parseFloat(priceStr) || 0;
 
+    const insertData = {
+      name: productData.name,
+      price: price,
+      image: productData.image,
+      category: productData.category,
+      description: productData.description || null,
+      stock_quantity: productData.stock_quantity || 0,
+      is_active: productData.is_active !== undefined ? productData.is_active : true,
+    };
+
     const { data, error } = await supabase
       .from('products')
-      .insert({
-        name: productData.name,
-        price: price,
-        image: productData.image,
-        category: productData.category,
-        description: productData.description || null,
-        stock_quantity: productData.stock_quantity || 0,
-        is_active: productData.is_active !== undefined ? productData.is_active : true,
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) throw error;
+    if (!data) {
+      throw new Error('Product creation failed: No data returned');
+    }
+    
     return data;
   },
 
   updateProduct: async (productId, productData) => {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!user) throw new Error('User must be authenticated to update products');
+    const isAdminAuthenticated = typeof window !== 'undefined' && (
+      window.adminAuthenticated === true || 
+      sessionStorage.getItem("adminAuth") === "true"
+    );
+    
+    let user = null;
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      user = authUser;
+    } catch (userError) {
+      if (!isAdminAuthenticated) {
+        throw new Error('User must be authenticated to update products');
+      }
+    }
 
-    // Parse price if provided
     const updateData = { ...productData };
     if (updateData.price) {
       const priceStr = String(updateData.price).replace('₹', '').replace(',', '');
@@ -396,28 +409,42 @@ export const productsAPI = {
       .single();
 
     if (error) throw error;
+    if (!data) {
+      throw new Error('Product update failed: No data returned');
+    }
     return data;
   },
 
   deleteProduct: async (productId) => {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!user) throw new Error('User must be authenticated to delete products');
+    const isAdminAuthenticated = typeof window !== 'undefined' && (
+      window.adminAuthenticated === true || 
+      sessionStorage.getItem("adminAuth") === "true"
+    );
+    
+    let user = null;
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      user = authUser;
+    } catch (userError) {
+      if (!isAdminAuthenticated) {
+        throw new Error('User must be authenticated to delete products');
+      }
+    }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('products')
       .delete()
-      .eq('id', productId);
+      .eq('id', productId)
+      .select();
 
     if (error) throw error;
-    return { success: true };
+    return { success: true, data };
   },
 };
 
 // Categories API using Supabase
 export const categoriesAPI = {
   getAllCategories: async () => {
-    // Only select necessary fields for faster queries
     const { data, error } = await supabase
       .from('categories')
       .select('id, name, image, is_active')
@@ -425,7 +452,6 @@ export const categoriesAPI = {
 
     if (error) throw error;
     
-    // Custom order: Fruits, Vegetables, Non-Vegetables, Cereal Grains & Pulses, Cleansing Products, Other Groceries
     const customOrder = [
       'Fruits',
       'Vegetables',
@@ -435,20 +461,15 @@ export const categoriesAPI = {
       'Other Groceries'
     ];
     
-    // Sort categories by custom order
     const sortedData = (data || []).sort((a, b) => {
       const indexA = customOrder.indexOf(a.name);
       const indexB = customOrder.indexOf(b.name);
       
-      // If both are in custom order, sort by their position
       if (indexA !== -1 && indexB !== -1) {
         return indexA - indexB;
       }
-      // If only A is in custom order, it comes first
       if (indexA !== -1) return -1;
-      // If only B is in custom order, it comes first
       if (indexB !== -1) return 1;
-      // If neither is in custom order, sort alphabetically
       return a.name.localeCompare(b.name);
     });
     
@@ -460,14 +481,12 @@ export const categoriesAPI = {
     if (userError) throw userError;
     if (!user) throw new Error('User must be authenticated to view all categories');
 
-    // Only select necessary fields for faster queries
     const { data, error } = await supabase
       .from('categories')
       .select('id, name, image, is_active, created_at, updated_at');
 
     if (error) throw error;
     
-    // Custom order: Fruits, Vegetables, Non-Vegetables, Cereal Grains & Pulses, Cleansing Products, Other Groceries
     const customOrder = [
       'Fruits',
       'Vegetables',
@@ -477,20 +496,15 @@ export const categoriesAPI = {
       'Other Groceries'
     ];
     
-    // Sort categories by custom order
     const sortedData = (data || []).sort((a, b) => {
       const indexA = customOrder.indexOf(a.name);
       const indexB = customOrder.indexOf(b.name);
       
-      // If both are in custom order, sort by their position
       if (indexA !== -1 && indexB !== -1) {
         return indexA - indexB;
       }
-      // If only A is in custom order, it comes first
       if (indexA !== -1) return -1;
-      // If only B is in custom order, it comes first
       if (indexB !== -1) return 1;
-      // If neither is in custom order, sort alphabetically
       return a.name.localeCompare(b.name);
     });
     
@@ -560,14 +574,11 @@ export const categoriesAPI = {
 
 // Admin API for admin authentication
 export const adminAPI = {
-  // Login admin using username and password from database
   login: async (username, password) => {
-    // Check if Supabase is configured
     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
       throw new Error('Supabase is not configured. Please set up your .env file.');
     }
 
-    // Get admin user from database
     const { data: adminUser, error } = await supabase
       .from('admin_users')
       .select('*')
@@ -579,16 +590,8 @@ export const adminAPI = {
       throw new Error('Invalid username or password');
     }
 
-    // Verify password using bcrypt (we'll need to hash on client side for comparison)
-    // Note: In production, this should be done server-side via Edge Function
-    // For now, we'll use a simple approach - you should implement proper password verification
-    
-    // Import bcryptjs for password verification
-    // Since we can't use bcrypt in browser directly, we'll need to:
-    // 1. Use Supabase Edge Function for password verification, OR
-    // 2. Use a simpler approach with hashed passwords
-    
-    // For now, return admin data if found (password verification should be server-side)
+    // Note: Password verification should be done server-side via Edge Function
+    // For now, return admin data if found
     return {
       id: adminUser.id,
       username: adminUser.username,
@@ -596,13 +599,11 @@ export const adminAPI = {
     };
   },
 
-  // Request password reset
   requestPasswordReset: async (email) => {
     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
       throw new Error('Supabase is not configured.');
     }
 
-    // Check if admin exists
     const { data: adminUser, error } = await supabase
       .from('admin_users')
       .select('*')
@@ -614,17 +615,14 @@ export const adminAPI = {
       throw new Error('Admin email not found');
     }
 
-    // Return success (in production, send email with reset token)
     return { success: true, message: 'Password reset email sent' };
   },
 
-  // Reset password
   resetPassword: async (email, newPassword) => {
     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
       throw new Error('Supabase is not configured.');
     }
 
-    // First verify admin exists
     const { data: adminUser, error: checkError } = await supabase
       .from('admin_users')
       .select('*')
@@ -640,7 +638,6 @@ export const adminAPI = {
     // For now, we're storing it directly (NOT SECURE - for development only)
     // TODO: Implement server-side password hashing
     
-    // Update password in database
     const { data, error } = await supabase
       .from('admin_users')
       .update({ 
@@ -663,13 +660,11 @@ export const adminAPI = {
     return { success: true, message: 'Password reset successfully' };
   },
 
-  // Update password (for logged-in admin)
   updatePassword: async (adminId, currentPassword, newPassword) => {
     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
       throw new Error('Supabase is not configured.');
     }
 
-    // Get current admin
     const { data: adminUser, error: fetchError } = await supabase
       .from('admin_users')
       .select('*')

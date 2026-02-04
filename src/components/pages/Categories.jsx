@@ -55,11 +55,16 @@ const Categories = () => {
   const [isLoading, setIsLoading] = useState(false); // Start with false since we have defaults
 
   useEffect(() => {
+    let isMounted = true;
+    let timeoutId = null;
+
     // Fetch fresh data in background (non-blocking) - data already shown from initial state
     const fetchCategories = async () => {
-      setTimeout(async () => {
-        try {
-          const categoriesData = await categoriesAPI.getAllCategories();
+      try {
+        const categoriesData = await categoriesAPI.getAllCategories();
+        
+        // Only update state if component is still mounted
+        if (isMounted) {
           // Ensure all categories have valid image URLs
           const categoriesWithImages = categoriesData.map(cat => ({
             ...cat,
@@ -71,14 +76,28 @@ const Categories = () => {
           
           // Update cache
           cache.set("categories", categoriesWithImages);
-        } catch (error) {
-          console.error("Error fetching categories:", error);
-          // Error already handled above, keep existing categories
         }
-      }, 0); // Execute in next tick, non-blocking
+      } catch (error) {
+        // Only log non-abort errors (abort errors are expected when component unmounts)
+        if (error.name !== 'AbortError' && error.message !== 'signal is aborted without reason') {
+          console.error("Error fetching categories:", error);
+        }
+        // Keep existing categories on error
+      }
     };
 
-    fetchCategories();
+    // Use setTimeout to make it non-blocking, but store the timeout ID
+    timeoutId = setTimeout(() => {
+      fetchCategories();
+    }, 0);
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   return (

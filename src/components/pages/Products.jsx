@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FaShoppingCart, FaPlus, FaMinus, FaSpinner } from "react-icons/fa";
+import { FaShoppingCart, FaPlus, FaMinus, FaSpinner, FaCheck } from "react-icons/fa";
 import { productsAPI } from "../../services/api";
 import { cache } from "../../utils/cache";
 import styles from "./Products.module.css";
@@ -28,6 +28,7 @@ const Products = () => {
   const [cartQuantities, setCartQuantities] = useState({});
   const [isLoading, setIsLoading] = useState(false); // Start with false since we have cached/default data
   const [error, setError] = useState("");
+  const [justAdded, setJustAdded] = useState({}); // Track products just added for animation
 
   // Load products from Supabase database with instant display
   useEffect(() => {
@@ -146,6 +147,22 @@ const Products = () => {
       ...prev,
       [productId]: (prev[productId] || 0) + increment
     }));
+    
+    // Set just added state for animation (only in mobile)
+    setJustAdded((prev) => ({
+      ...prev,
+      [productId]: true
+    }));
+    
+    // Remove animation state after animation completes
+    setTimeout(() => {
+      setJustAdded((prev) => {
+        const updated = { ...prev };
+        delete updated[productId];
+        return updated;
+      });
+    }, 2000);
+    
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
@@ -260,27 +277,38 @@ const Products = () => {
                     {product.price}{isWeightBased(product.category) ? '/kg' : ''}
                   </span>
                   {cartQuantities[product.id] ? (
-                    <div className={styles.quantityControls}>
-                      <button
-                        className={styles.quantityButton}
-                        onClick={() => handleQuantityChange(product, -1)}
-                        aria-label="Decrease quantity"
+                    <>
+                      {/* Desktop: Show quantity controls */}
+                      <div className={styles.quantityControls}>
+                        <button
+                          className={styles.quantityButton}
+                          onClick={() => handleQuantityChange(product, -1)}
+                          aria-label="Decrease quantity"
+                        >
+                          -
+                        </button>
+                        <span className={styles.quantity}>
+                          {isWeightBased(product.category) 
+                            ? `${cartQuantities[product.id]} kg` 
+                            : cartQuantities[product.id]}
+                        </span>
+                        <button
+                          className={styles.quantityButton}
+                          onClick={() => handleQuantityChange(product, 1)}
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                      {/* Mobile: Show "Added" button with tick icon */}
+                      <button 
+                        className={`${styles.addedButton} ${justAdded[product.id] ? styles.addedButtonAnimated : ''}`}
+                        aria-label={`${product.name} added to cart`}
                       >
-                        -
+                        <FaCheck />
+                        <span>Added</span>
                       </button>
-                      <span className={styles.quantity}>
-                        {isWeightBased(product.category) 
-                          ? `${cartQuantities[product.id]} kg` 
-                          : cartQuantities[product.id]}
-                      </span>
-                      <button
-                        className={styles.quantityButton}
-                        onClick={() => handleQuantityChange(product, 1)}
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
+                    </>
                   ) : (
                     <button 
                       className={styles.cartButton}
@@ -291,7 +319,7 @@ const Products = () => {
                       Add
                     </button>
                   )}
-              </div>
+                </div>
             </div>
             </div>
             ))}

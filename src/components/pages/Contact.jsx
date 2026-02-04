@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaSpinner } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaClock, FaSpinner, FaUpload, FaTimes } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 import styles from "./Contact.module.css";
 
@@ -12,6 +12,7 @@ const Contact = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState({ type: "", message: "" });
+  const [uploadedImages, setUploadedImages] = useState([]);
 
   const handleChange = (e) => {
     setFormData({
@@ -22,6 +23,49 @@ const Contact = () => {
     if (submitStatus.type) {
       setSubmitStatus({ type: "", message: "" });
     }
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please select valid image files"
+      });
+      return;
+    }
+
+    // Check file sizes (max 5MB per image)
+    const oversizedFiles = imageFiles.filter(file => file.size > 5 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      setSubmitStatus({
+        type: "error",
+        message: "Some images exceed 5MB limit. Please select smaller images."
+      });
+      return;
+    }
+
+    // Create preview URLs for all selected images
+    imageFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImages(prev => [...prev, {
+          file: file,
+          preview: reader.result,
+          id: Date.now() + Math.random()
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Clear the input
+    e.target.value = '';
+  };
+
+  const handleRemoveImage = (id) => {
+    setUploadedImages(prev => prev.filter(img => img.id !== id));
   };
 
   const handleSubmit = async (e) => {
@@ -61,6 +105,7 @@ const Contact = () => {
           message: "Thank you for your message! We'll get back to you soon."
         });
         setFormData({ name: "", email: "", phone: "", message: "" });
+        setUploadedImages([]);
       } else {
         throw new Error("Failed to send message");
       }
@@ -209,6 +254,39 @@ const Contact = () => {
                   required
                   disabled={isLoading}
                 ></textarea>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="imageUpload" className={styles.uploadLabel}>
+                  <FaUpload className={styles.uploadIcon} />
+                  Upload Images
+                </label>
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className={styles.fileInput}
+                  disabled={isLoading}
+                />
+                {uploadedImages.length > 0 && (
+                  <div className={styles.imagePreviewContainer}>
+                    {uploadedImages.map((img) => (
+                      <div key={img.id} className={styles.imagePreviewItem}>
+                        <img src={img.preview} alt="Preview" className={styles.previewImage} />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(img.id)}
+                          className={styles.removeImageButton}
+                          disabled={isLoading}
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <button 
